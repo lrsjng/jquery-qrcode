@@ -9,6 +9,11 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 
 ## Changelog
 
+### v0.2 - *2012-??-??*
+
+* 
+
+
 ### v0.1 - *2012-07-01*
 
 * Initial release
