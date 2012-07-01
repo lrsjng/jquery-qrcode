@@ -1,0 +1,23 @@
+
+# Build files and folders to ignore
+build
+release
+
+# Local
+local.makefile
+build.local.xml
+*.sublime-*
+.ant-targets*
+
+# Numerous always-ignore extensions
+*.ant-targets-build.xml
+*.diff
+*.err
+*.orig
+*.log
+*.rej
+*.swo
+*.swp
+*.vi
+*~
+*.sass-cache
