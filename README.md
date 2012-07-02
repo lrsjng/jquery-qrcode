@@ -10,6 +10,11 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 ## Changelog
 
 
+### v0.3 - *2012-??-??*
+
+* 
+
+
 ### v0.2 - *2012-07-02*
 
 * now encodes up to ~2900 characters (8-bit)
