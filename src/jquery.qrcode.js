@@ -6,10 +6,17 @@
 (function ($) {
 	'use strict';
 
-		// Wrapper for the original QR code generator.
-	var createQr = function (typeNumber, correctLevel, text) {
+		// Check if canvas is available in the browser (as Modernizr does)
+	var canvasAvailable = (function () {
 
-			// qrcode is the single public function that will be defined by the `QR Code Generator`
+			var elem = document.createElement('canvas');
+			return !!(elem.getContext && elem.getContext('2d'));
+		}()),
+
+		// Wrapper for the original QR code generator.
+		createQr = function (typeNumber, correctLevel, text) {
+
+			// `qrcode` is the single public function that will be defined by the `QR Code Generator`
 			// at the end of the file.
 			var qr = qrcode(typeNumber, correctLevel);
 			qr.addData(text);
@@ -117,6 +124,13 @@
 			return $div;
 		},
 
+		createHTML = function (options) {
+
+			var settings = $.extend({}, defaults, options);
+
+			return canvasAvailable && settings.render === 'canvas' ? createCanvas(settings) : createDiv(settings);
+		},
+
 		// Plugin
 		// ======
 
@@ -145,11 +159,9 @@
 	// -------------------
 	$.fn.qrcode = function(options) {
 
-		var settings = $.extend({}, defaults, options);
-
 		return this.each(function () {
 
-			$(this).append(settings.render === 'canvas' ? createCanvas(settings) : createDiv(settings));
+			$(this).append(createHTML(options));
 		});
 	};
 
