@@ -22,7 +22,7 @@
 		// is to long to be encoded. At the moment it should work with up to 271 characters.
 		createBestQr = function (text) {
 
-			for (var type = 2; type <= 10; type += 1) {
+			for (var type = 2; type <= 40; type += 1) {
 				try {
 					return createQr(type, 'L', text);
 				} catch (err) {}
