@@ -6,7 +6,7 @@ var path = require('path'),
 	child_process = require('child_process');
 
 
-var version = '0.3-dev',
+var pkg = require('./package.json'),
 
 	root = path.resolve(__dirname),
 	src = path.resolve(root, 'src'),
@@ -56,18 +56,18 @@ module.exports = function (make) {
 		stamp = moment();
 
 		replacements = {
-			version: version,
+			pkg: pkg,
 			stamp: stamp.format('YYYY-MM-DD HH:mm:ss')
 		};
 
-		Event.info({ method: 'before', message: version + ' ' + replacements.stamp });
+		Event.info({ method: 'before', message: pkg.version + ' ' + replacements.stamp });
 	});
 
 
 	make.target('git-hash', [], 'get git hash tag')
 		.async(function (done, fail) {
 
-			if (!/-dev$/.test(version)) {
+			if (!/-dev$/.test(pkg.version)) {
 				done();
 				return;
 			}
@@ -86,9 +86,8 @@ module.exports = function (make) {
 					Event.error({ method: 'git-hash', message: cmd + ' exit code ' + code });
 					fail();
 				} else {
-					version += '-' + hash;
-					replacements.version = version;
-					Event.ok({ method: 'git-hash', message: 'version is now ' + version });
+					pkg.version += '-' + hash;
+					Event.ok({ method: 'git-hash', message: 'version is now ' + pkg.version });
 					done();
 				}
 			});
@@ -113,12 +112,14 @@ module.exports = function (make) {
 	make.target('build', ['git-hash'], 'build all updated files')
 		.sync(function () {
 
-			$(src + ': jquery.qrcode.js')
+			var scriptName = pkg.name;
+
+			$(src + ': ' + scriptName + '.js')
 				.includify()
 				.handlebars(replacements)
-				.write($.OVERWRITE, path.join(build, 'jquery.qrcode-' + version + '.js'))
+				.write($.OVERWRITE, path.join(build, scriptName + '-' + pkg.version + '.js'))
 				.uglifyjs()
-				.write($.OVERWRITE, path.join(build, 'jquery.qrcode-' + version + '.min.js'));
+				.write($.OVERWRITE, path.join(build, scriptName + '-' + pkg.version + '.min.js'));
 
 			$(root + ': README*, LICENSE*')
 				.write($.OVERWRITE, mapperRoot);
@@ -128,7 +129,7 @@ module.exports = function (make) {
 	make.target('release', ['clean', 'build'], 'create a zipball')
 		.async(function (done, fail) {
 
-			var target = path.join(build, 'jquery.qrcode-' + version + '.zip'),
+			var target = path.join(build, pkg.name + '-' + pkg.version + '.zip'),
 				cmd = 'zip',
 				args = ['-ro', target, '.'],
 				options = { cwd: build },
