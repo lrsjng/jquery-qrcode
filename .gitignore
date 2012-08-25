@@ -1,8 +1,6 @@
 
 build
-release
-
-# local files
-build.local.xml
+local
 *.sublime-*
-.ant-targets-*
+
+build.local.xml
