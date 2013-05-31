@@ -64,34 +64,23 @@ module.exports = function (make) {
 	});
 
 
-	make.target('git-hash', [], 'get git hash tag')
-		.async(function (done, fail) {
+	make.target('check-version', [], 'add git info to dev builds').async(function (done, fail) {
 
-			if (!/-dev$/.test(pkg.version)) {
-				done();
-				return;
-			}
+		if (!/-dev$/.test(pkg.version)) {
+			done();
+			return;
+		}
 
-			var hash = '',
-				cmd = 'git',
-				args = ['rev-parse', '--short', 'HEAD'],
-				options = {},
-				proc = child_process.spawn(cmd, args, options);
+		$.git(root, function (err, result) {
 
-			proc.stdout.on('data', function (data) {
-				hash += ('' + data).replace(/\s*/g, '');
+			pkg.version += '-' + result.revListOriginMasterHead.length + '-' + result.revParseHead.slice(0, 7);
+			Event.info({
+				method: 'check-version',
+				message: 'version set to ' + pkg.version
 			});
-			proc.on('exit', function (code) {
-				if (code) {
-					Event.error({ method: 'git-hash', message: cmd + ' exit code ' + code });
-					fail();
-				} else {
-					pkg.version += '-' + hash;
-					Event.ok({ method: 'git-hash', message: 'version is now ' + pkg.version });
-					done();
-				}
-			});
+			done();
 		});
+	});
 
 
 	make.target('clean', [], 'delete build folder')
@@ -109,7 +98,7 @@ module.exports = function (make) {
 		});
 
 
-	make.target('build', ['git-hash'], 'build all updated files')
+	make.target('build', ['check-version'], 'build all updated files')
 		.sync(function () {
 
 			var scriptName = pkg.name;
