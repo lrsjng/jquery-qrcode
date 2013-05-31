@@ -48,6 +48,7 @@ module.exports = function (make) {
 		stamp, replacements;
 
 
+	make.version('>=0.8.1');
 	make.defaults('release');
 
 
