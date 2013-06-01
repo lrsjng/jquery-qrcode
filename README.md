@@ -10,7 +10,12 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 ## Changelog
 
 
-### v0.3 - *2012-06-01*
+### v0.4 - *2013-xx-xx*
+
+* 
+
+
+### v0.3 - *2013-06-01*
 
 * adds option to draw on existing canvas
 
