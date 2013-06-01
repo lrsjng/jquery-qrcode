@@ -38,63 +38,88 @@
 			return null;
 		},
 
-		// Returns a `canvas` element representing the QR code for the given settings.
-		createCanvas = function (settings) {
+		// Draws QR code to the given `canvas` and returns it.
+		drawOnCanvas = function (canvas, settings) {
 
-			var qr = createBestQr(settings.text),
-				$canvas = $('<canvas/>').attr('width', settings.width).attr('height', settings.height),
+				// some shortcuts to improve compression
+			var settings_text = settings.text,
+				settings_left = settings.left,
+				settings_top = settings.top,
+				settings_width = settings.width,
+				settings_height = settings.height,
+				settings_color = settings.color,
+				settings_bgColor = settings.bgColor,
+
+				qr = createBestQr(settings_text),
+				$canvas = $(canvas),
 				ctx = $canvas[0].getContext('2d');
 
-			if (settings.bgColor) {
-				ctx.fillStyle = settings.bgColor;
-				ctx.fillRect(0, 0, settings.width, settings.height);
+			if (settings_bgColor) {
+				ctx.fillStyle = settings_bgColor;
+				ctx.fillRect(settings_left, settings_top, settings_width, settings_height);
 			}
 
 			if (qr) {
 				var moduleCount = qr.getModuleCount(),
-					moduleWidth = settings.width / moduleCount,
-					moduleHeight = settings.height / moduleCount,
+					moduleWidth = settings_width / moduleCount,
+					moduleHeight = settings_height / moduleCount,
 					row, col;
 
 				ctx.beginPath();
 				for (row = 0; row < moduleCount; row += 1) {
 					for (col = 0; col < moduleCount; col += 1) {
 						if (qr.isDark(row, col)) {
-							ctx.rect(col * moduleWidth, row * moduleHeight, moduleWidth, moduleHeight);
+							ctx.rect(settings_left + col * moduleWidth, settings_top + row * moduleHeight, moduleWidth, moduleHeight);
 						}
 					}
 				}
-				ctx.fillStyle = settings.color;
+				ctx.fillStyle = settings_color;
 				ctx.fill();
 			}
 
 			return $canvas;
 		},
 
+		// Returns a `canvas` element representing the QR code for the given settings.
+		createCanvas = function (settings) {
+
+			var $canvas = $('<canvas/>').attr('width', settings.width).attr('height', settings.height);
+
+			return drawOnCanvas($canvas, settings);
+		},
+
 		// Returns a `div` element representing the QR code for the given settings.
 		createDiv = function (settings) {
 
-			var qr = createBestQr(settings.text),
+				// some shortcuts to improve compression
+			var settings_text = settings.text,
+				settings_width = settings.width,
+				settings_height = settings.height,
+				settings_color = settings.color,
+				settings_bgColor = settings.bgColor,
+				math_floor = Math.floor,
+
+				qr = createBestQr(settings_text),
 				$div = $('<div/>').css({
 										position: 'relative',
 										left: 0,
 										top: 0,
 										padding: 0,
 										margin: 0,
-										width: settings.width,
-										height: settings.height
+										width: settings_width,
+										height: settings_height
 									});
 
-			if (settings.bgColor) {
-				$div.css('background-color', settings.bgColor);
+			if (settings_bgColor) {
+				$div.css('background-color', settings_bgColor);
 			}
 
 			if (qr) {
 				var moduleCount = qr.getModuleCount(),
-					moduleWidth = Math.floor(settings.width / moduleCount),
-					moduleHeight = Math.floor(settings.height / moduleCount),
-					offsetLeft = Math.floor(0.5 * (settings.width - moduleWidth * moduleCount)),
-					offsetTop = Math.floor(0.5 * (settings.height - moduleHeight * moduleCount)),
+					moduleWidth = math_floor(settings_width / moduleCount),
+					moduleHeight = math_floor(settings_height / moduleCount),
+					offsetLeft = math_floor(0.5 * (settings_width - moduleWidth * moduleCount)),
+					offsetTop = math_floor(0.5 * (settings_height - moduleHeight * moduleCount)),
 					row, col;
 
 				for (row = 0; row < moduleCount; row += 1) {
@@ -117,7 +142,7 @@
 								margin: 0,
 								width: moduleWidth,
 								height: moduleHeight,
-								'background-color': settings.color
+								'background-color': settings_color
 							});
 			}
 
@@ -141,6 +166,10 @@
 			// render method: `'canvas'` or `'div'`
 			render: 'canvas',
 
+			// left and top in pixel if rendering on existing canvas
+			left: 0,
+			top: 0,
+
 			// width and height in pixel
 			width: 256,
 			height: 256,
@@ -161,7 +190,11 @@
 
 		return this.each(function () {
 
-			$(this).append(createHTML(options));
+			if (this.nodeName.toLowerCase() === 'canvas') {
+				drawOnCanvas(this, options);
+			} else {
+				$(this).append(createHTML(options));
+			}
 		});
 	};
 
