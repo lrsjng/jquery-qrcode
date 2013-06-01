@@ -166,7 +166,7 @@
 			// render method: `'canvas'` or `'div'`
 			render: 'canvas',
 
-			// left and top in pixel if rendering on existing canvas
+			// left and top in pixel if drawn onto existing canvas
 			left: 0,
 			top: 0,
 
