@@ -149,9 +149,7 @@
 			return $div;
 		},
 
-		createHTML = function (options) {
-
-			var settings = $.extend({}, defaults, options);
+		createHTML = function (settings) {
 
 			return canvasAvailable && settings.render === 'canvas' ? createCanvas(settings) : createDiv(settings);
 		},
@@ -188,12 +186,14 @@
 	// -------------------
 	$.fn.qrcode = function(options) {
 
+		var settings = $.extend({}, defaults, options);
+
 		return this.each(function () {
 
 			if (this.nodeName.toLowerCase() === 'canvas') {
-				drawOnCanvas(this, options);
+				drawOnCanvas(this, settings);
 			} else {
-				$(this).append(createHTML(options));
+				$(this).append(createHTML(settings));
 			}
 		});
 	};
