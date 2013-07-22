@@ -26,7 +26,7 @@
 		},
 
 		// Returns a minimal QR code for the given text. Returns `null` if `text`
-		// is to long to be encoded. At the moment it should work with up to 271 characters.
+		// is to long to be encoded. At the moment it should work with up to ~2900 characters.
 		createBestQr = function (text) {
 
 			for (var type = 2; type <= 40; type += 1) {
