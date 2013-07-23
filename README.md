@@ -7,7 +7,12 @@ jQuery.qrcode is provided under the terms of the [MIT License](http://github.com
 
 Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudos to [jquery.qrcode.js](http://github.com/jeromeetienne/jquery-qrcode) (MIT).
 
+
 ## Changelog
+
+### v0.5.0 - *2013-07-23*
+
+* adds option to set error correction level
 
 
 ### v0.4 - *2013-07-09*

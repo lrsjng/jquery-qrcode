@@ -14,11 +14,11 @@
 		}()),
 
 		// Wrapper for the original QR code generator.
-		createQr = function (typeNumber, correctLevel, text) {
+		createQr = function (typeNumber, correctionLevel, text) {
 
 			// `qrcode` is the single public function that will be defined by the `QR Code Generator`
 			// at the end of the file.
-			var qr = qrcode(typeNumber, correctLevel);
+			var qr = qrcode(typeNumber, correctionLevel);
 			qr.addData(text);
 			qr.make();
 
@@ -26,12 +26,12 @@
 		},
 
 		// Returns a minimal QR code for the given text. Returns `null` if `text`
-		// is to long to be encoded. At the moment it should work with up to 271 characters.
-		createBestQr = function (text) {
+		// is to long to be encoded. At the moment it should work with up to ~2900 characters.
+		createBestQr = function (text, correctionLevel) {
 
 			for (var type = 2; type <= 40; type += 1) {
 				try {
-					return createQr(type, 'L', text);
+					return createQr(type, correctionLevel, text);
 				} catch (err) {}
 			}
 
@@ -43,6 +43,7 @@
 
 				// some shortcuts to improve compression
 			var settings_text = settings.text,
+				settings_ecl = settings.ecl,
 				settings_left = settings.left,
 				settings_top = settings.top,
 				settings_width = settings.width,
@@ -50,7 +51,7 @@
 				settings_color = settings.color,
 				settings_bgColor = settings.bgColor,
 
-				qr = createBestQr(settings_text),
+				qr = createBestQr(settings_text, settings_ecl),
 				$canvas = $(canvas),
 				ctx = $canvas[0].getContext('2d');
 
@@ -93,13 +94,14 @@
 
 				// some shortcuts to improve compression
 			var settings_text = settings.text,
+				settings_ecl = settings.ecl,
 				settings_width = settings.width,
 				settings_height = settings.height,
 				settings_color = settings.color,
 				settings_bgColor = settings.bgColor,
 				math_floor = Math.floor,
 
-				qr = createBestQr(settings_text),
+				qr = createBestQr(settings_text, settings_ecl),
 				$div = $('<div/>').css({
 										position: 'relative',
 										left: 0,
@@ -163,6 +165,9 @@
 
 			// render method: `'canvas'` or `'div'`
 			render: 'canvas',
+
+			// error correction level: `'L'`, `'M'`, `'Q'` or `'H'`
+			ecl: 'L',
 
 			// left and top in pixel if drawn onto existing canvas
 			left: 0,
