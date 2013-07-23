@@ -14,24 +14,26 @@
 		}()),
 
 		// Wrapper for the original QR code generator.
-		createQr = function (typeNumber, correctionLevel, text) {
+		createQr = function (version, level, text) {
 
 			// `qrcode` is the single public function that will be defined by the `QR Code Generator`
 			// at the end of the file.
-			var qr = qrcode(typeNumber, correctionLevel);
+			var qr = qrcode(version, level);
 			qr.addData(text);
 			qr.make();
 
 			return qr;
 		},
 
-		// Returns a minimal QR code for the given text. Returns `null` if `text`
-		// is to long to be encoded. At the moment it should work with up to ~2900 characters.
-		createBestQr = function (text, correctionLevel) {
+		// Returns a minimal QR code for the given text starting with version `minVersion`.
+		// Returns `null` if `text` is too long to be encoded in `maxVersion`.
+		createBestQr = function (minVersion, maxVersion, level, text) {
 
-			for (var type = 2; type <= 40; type += 1) {
+			minVersion = Math.max(1, minVersion);
+			maxVersion = Math.min(40, maxVersion);
+			for (var type = minVersion; type <= maxVersion; type += 1) {
 				try {
-					return createQr(type, correctionLevel, text);
+					return createQr(type, level, text);
 				} catch (err) {}
 			}
 
@@ -42,16 +44,14 @@
 		drawOnCanvas = function (canvas, settings) {
 
 				// some shortcuts to improve compression
-			var settings_text = settings.text,
-				settings_ecl = settings.ecl,
-				settings_left = settings.left,
+			var settings_left = settings.left,
 				settings_top = settings.top,
 				settings_width = settings.width,
 				settings_height = settings.height,
 				settings_color = settings.color,
 				settings_bgColor = settings.bgColor,
 
-				qr = createBestQr(settings_text, settings_ecl),
+				qr = createBestQr(settings.minVersion, settings.maxVersion, settings.ecLevel, settings.text),
 				$canvas = $(canvas),
 				ctx = $canvas[0].getContext('2d');
 
@@ -93,15 +93,13 @@
 		createDiv = function (settings) {
 
 				// some shortcuts to improve compression
-			var settings_text = settings.text,
-				settings_ecl = settings.ecl,
-				settings_width = settings.width,
+			var settings_width = settings.width,
 				settings_height = settings.height,
 				settings_color = settings.color,
 				settings_bgColor = settings.bgColor,
 				math_floor = Math.floor,
 
-				qr = createBestQr(settings_text, settings_ecl),
+				qr = createBestQr(settings.minVersion, settings.maxVersion, settings.ecLevel, settings.text),
 				$div = $('<div/>').css({
 										position: 'relative',
 										left: 0,
@@ -166,8 +164,12 @@
 			// render method: `'canvas'` or `'div'`
 			render: 'canvas',
 
+			// version range somewhere in 1..40
+			minVersion: 2,
+			maxVersion: 40,
+
 			// error correction level: `'L'`, `'M'`, `'Q'` or `'H'`
-			ecl: 'L',
+			ecLevel: 'L',
 
 			// left and top in pixel if drawn onto existing canvas
 			left: 0,
