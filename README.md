@@ -10,6 +10,12 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 
 ## Changelog
 
+
+### develop branch
+
+* ...
+
+
 ### v0.5.0 - *2013-07-23*
 
 * adds option to set error correction level
