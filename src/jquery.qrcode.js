@@ -18,36 +18,38 @@
 				qr.addData(text);
 				qr.make();
 
+				var moduleCount = qr.getModuleCount(),
+					isDark = function (col, row) {
+
+						return qr.isDark(col, row);
+					},
+					extIsDarkFn = function (width, height, blank) {
+
+						if (!blank) {
+							return isDark;
+						}
+
+						var moduleCount = qr.getModuleCount(),
+							moduleWidth = width / moduleCount,
+							moduleHeight = height / moduleCount;
+
+						return function (row, col) {
+
+							var l = col * moduleWidth,
+								t = row * moduleHeight,
+								r = l + moduleWidth,
+								b = t + moduleHeight;
+
+							return isDark(row, col) && (blank.l > r || l > blank.r || blank.t > b || t > blank.b);
+						};
+					};
+
 				this.version = version;
 				this.level = level;
 				this.text = text;
-				this.moduleCount = qr.getModuleCount();
-
-				this.isDark = function (col, row) {
-
-					return qr.isDark(col, row);
-				};
-
-				this.extIsDarkFn = function (width, height, blank) {
-
-					if (!blank) {
-						return this.isDark;
-					}
-
-					var moduleCount = qr.getModuleCount(),
-						moduleWidth = width / moduleCount,
-						moduleHeight = height / moduleCount;
-
-					return function (row, col) {
-
-						var l = col * moduleWidth,
-							t = row * moduleHeight,
-							r = l + moduleWidth,
-							b = t + moduleHeight;
-
-						return qr.isDark(row, col) && (blank.l > r || l > blank.r || blank.t > b || t > blank.b);
-					};
-				};
+				this.moduleCount = moduleCount;
+				this.isDark = isDark;
+				this.extIsDarkFn = extIsDarkFn;
 
 			} catch (err) {
 				return null;
@@ -130,6 +132,12 @@
 			return drawOnCanvas($canvas, settings);
 		},
 
+		// Returns an `image` element representing the QR code for the given settings.
+		createImage = function (settings) {
+
+			return $('<img />').attr('src', createCanvas(settings).toDataURL('image/png'));
+		},
+
 		// Returns a `div` element representing the QR code for the given settings.
 		createDiv = function (settings) {
 
@@ -194,7 +202,13 @@
 
 		createHTML = function (settings) {
 
-			return canvasAvailable && settings.render === 'canvas' ? createCanvas(settings) : createDiv(settings);
+			if (canvasAvailable && settings.render === 'canvas') {
+				return createCanvas(settings);
+			} else if (canvasAvailable && settings.render === 'image') {
+				return createImage(settings);
+			}
+
+			return createDiv(settings);
 		},
 
 		// Plugin
