@@ -10,50 +10,44 @@
 		// Wrapper for the original QR code generator.
 	var QRCode = function (version, level, text) {
 
-			try {
+			// `qrcode` is the single public function that will be defined by the `QR Code Generator`
+			// at the end of the file.
+			var qr = qrcode(version, level);
+			qr.addData(text);
+			qr.make();
 
-				// `qrcode` is the single public function that will be defined by the `QR Code Generator`
-				// at the end of the file.
-				var qr = qrcode(version, level);
-				qr.addData(text);
-				qr.make();
+			var moduleCount = qr.getModuleCount(),
+				isDark = function (col, row) {
 
-				var moduleCount = qr.getModuleCount(),
-					isDark = function (col, row) {
+					return qr.isDark(col, row);
+				},
+				extIsDarkFn = function (width, height, blank) {
 
-						return qr.isDark(col, row);
-					},
-					extIsDarkFn = function (width, height, blank) {
+					if (!blank) {
+						return isDark;
+					}
 
-						if (!blank) {
-							return isDark;
-						}
+					var moduleCount = qr.getModuleCount(),
+						moduleWidth = width / moduleCount,
+						moduleHeight = height / moduleCount;
 
-						var moduleCount = qr.getModuleCount(),
-							moduleWidth = width / moduleCount,
-							moduleHeight = height / moduleCount;
+					return function (row, col) {
 
-						return function (row, col) {
+						var l = col * moduleWidth,
+							t = row * moduleHeight,
+							r = l + moduleWidth,
+							b = t + moduleHeight;
 
-							var l = col * moduleWidth,
-								t = row * moduleHeight,
-								r = l + moduleWidth,
-								b = t + moduleHeight;
-
-							return isDark(row, col) && (blank.l > r || l > blank.r || blank.t > b || t > blank.b);
-						};
+						return isDark(row, col) && (blank.l > r || l > blank.r || blank.t > b || t > blank.b);
 					};
+				};
 
-				this.version = version;
-				this.level = level;
-				this.text = text;
-				this.moduleCount = moduleCount;
-				this.isDark = isDark;
-				this.extIsDarkFn = extIsDarkFn;
-
-			} catch (err) {
-				return null;
-			}
+			this.version = version;
+			this.level = level;
+			this.text = text;
+			this.moduleCount = moduleCount;
+			this.isDark = isDark;
+			this.extIsDarkFn = extIsDarkFn;
 		},
 
 		// Check if canvas is available in the browser (as Modernizr does)
@@ -70,10 +64,9 @@
 			minVersion = Math.max(1, minVersion);
 			maxVersion = Math.min(40, maxVersion);
 			for (var version = minVersion; version <= maxVersion; version += 1) {
-				var qr = new QRCode(version, level, text);
-				if (qr) {
-					return qr;
-				}
+				try {
+					return new QRCode(version, level, text);
+				} catch (err) {}
 			}
 
 			return null;
