@@ -11,6 +11,7 @@
 	var QRCode = function (version, level, text) {
 
 			try {
+
 				// `qrcode` is the single public function that will be defined by the `QR Code Generator`
 				// at the end of the file.
 				var qr = qrcode(version, level);
@@ -21,7 +22,33 @@
 				this.level = level;
 				this.text = text;
 				this.moduleCount = qr.getModuleCount();
-				this.isDark = function (col, row) { return qr.isDark(col, row); };
+
+				this.isDark = function (col, row) {
+
+					return qr.isDark(col, row);
+				};
+
+				this.extIsDarkFn = function (width, height, blank) {
+
+					if (!blank) {
+						return this.isDark;
+					}
+
+					var moduleCount = qr.getModuleCount(),
+						moduleWidth = width / moduleCount,
+						moduleHeight = height / moduleCount;
+
+					return function (row, col) {
+
+						var l = col * moduleWidth,
+							t = row * moduleHeight,
+							r = l + moduleWidth,
+							b = t + moduleHeight;
+
+						return qr.isDark(row, col) && (blank.l > r || l > blank.r || blank.t > b || t > blank.b);
+					};
+				};
+
 			} catch (err) {
 				return null;
 			}
@@ -77,25 +104,13 @@
 				var moduleCount = qr.moduleCount,
 					moduleWidth = settings_width / moduleCount,
 					moduleHeight = settings_height / moduleCount,
-					row, col,
-					forceBlank = function () { return false; };
-
-				if (settings_blank) {
-					forceBlank = function (row, col) {
-
-						var l = settings_left + col * moduleWidth,
-							t = settings_top + row * moduleHeight,
-							r = l + moduleWidth,
-							b = t + moduleHeight;
-
-						return settings_blank.l <= r && l <= settings_blank.r && settings_blank.t <= b && t <= settings_blank.b;
-					};
-				}
+					isDarkFn = qr.extIsDarkFn(settings_width, settings_height, settings_blank),
+					row, col;
 
 				ctx.beginPath();
 				for (row = 0; row < moduleCount; row += 1) {
 					for (col = 0; col < moduleCount; col += 1) {
-						if (qr.isDark(row, col) && !forceBlank(row, col)) {
+						if (isDarkFn(row, col)) {
 							ctx.rect(settings_left + col * moduleWidth, settings_top + row * moduleHeight, moduleWidth, moduleHeight);
 						}
 					}
@@ -216,7 +231,7 @@
 			// the encoded text
 			text: 'no text',
 
-			// blank space: {l, t, r, b}
+			// blank space: {l: 0, t: 0, r: 0, b: 0} in px relative to QR code space
 			blank: null
 		};
 
