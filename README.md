@@ -13,7 +13,8 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 
 ### develop branch
 
-* ...
+* adds options to set version range
+* adds option to set blank area
 
 
 ### v0.5.0 - *2013-07-23*
