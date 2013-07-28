@@ -11,6 +11,11 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 ## Changelog
 
 
+### develop branch
+
+* ...
+
+
 ### v0.6.0 - *2013-07-28*
 
 * adds version range
