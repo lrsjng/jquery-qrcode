@@ -1,0 +1,115 @@
+
+body {
+	font-family: Ubuntu;
+	margin: 0;
+	padding: 0;
+	text-align: center;
+	background: repeat url("back.png");
+}
+
+#banner {
+	display: block;
+	text-decoration: none;
+	color: rgb(29, 119, 194);
+	padding: 12px 0 0;
+	text-align: center;
+}
+
+#banner:hover {
+	color: #333;
+}
+
+#container {
+	display: inline-block;
+	margin: 20px auto;
+	box-shadow: 0 0 16px rgba(0,0,0,0.5);
+}
+
+#container > * {
+	display: block;
+}
+
+.control {
+	position: absolute;
+	background-color: #f8f8f8;
+	top: 0;
+	width: 190px;
+	box-shadow: 0 0 32px rgba(0,0,0,0.5);
+	overflow: hidden;
+	text-align: left;
+}
+
+.control.left {
+	left: 0;
+}
+
+.control.right {
+	right: 0;
+}
+
+hr {
+	margin: 12px 0 0;
+	padding: 0;
+	border: none;
+	height: 1px;
+	background-color: rgba(0,0,0,0.1);
+}
+
+label {
+	font-size: 10px;
+	color: #bbb;
+	padding: 12px 4px 0 4px;
+}
+
+html.opera label[for="radius"] {
+	color: #e55;
+}
+
+#download {
+	text-align: center;
+	font-weight: bold;
+	text-decoration: none;
+	display: block;
+	color: #555;
+	background-color: #ddd;
+	margin: 4px;
+	padding: 8px 0;
+	border: 1px solid #ddd;
+	cursor: pointer;
+}
+
+input, textarea, select {
+	font-family: Ubuntu;
+	display: block;
+	background-color: #fff;
+	margin: 2px;
+	padding: 0 2px;
+	border: 1px solid #ddd;
+	width: 180px;
+	height: 22px;
+}
+
+#text {
+	height: 48px;
+}
+
+#img-buffer {
+	display: none;
+}
+
+
+
+input[type="range"] {
+	-webkit-appearance: none;
+/*	height: 8px;
+	margin-top: 4px;
+	margin-bottom: 4px;
+*/	cursor: pointer;
+}
+input::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	width: 16px;
+	height: 16px;
+	border-radius: 3px;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #aaa) );
+}

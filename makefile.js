@@ -34,6 +34,11 @@ var pkg = require('./package.json'),
 		]
 	},
 
+	mapperSrc = function (blob) {
+
+		return blob.source.replace(src, build);
+	},
+
 	mapperRoot = function (blob) {
 
 		return blob.source.replace(root, build);
@@ -104,10 +109,15 @@ module.exports = function (make) {
 
 			var scriptName = pkg.name;
 
+			$(src + '/demo/*')
+				.handlebars(replacements)
+				.write($.OVERWRITE, mapperSrc);
+
 			$(src + ': ' + scriptName + '.js')
 				.includify()
 				.handlebars(replacements)
 				.write($.OVERWRITE, path.join(build, scriptName + '-' + pkg.version + '.js'))
+				.write($.OVERWRITE, path.join(build, 'demo', scriptName + '.js'))
 				.uglifyjs()
 				.write($.OVERWRITE, path.join(build, scriptName + '-' + pkg.version + '.min.js'));
 

@@ -10,6 +10,17 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 
 ## Changelog
 
+
+### v0.6.0 - *2013-07-28*
+
+* adds version range
+* adds quiet zone
+* adds optional label or image
+* adds rounded corners
+* adds image output
+* adds demo
+
+
 ### v0.5.0 - *2013-07-23*
 
 * adds option to set error correction level
