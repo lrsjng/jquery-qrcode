@@ -24,7 +24,7 @@
 	<div id="container"></div>
 
 	<div class="control left">
-		<a id="banner" href="http://larsjung.de/qrcode/">{{pkg.displayName}} · Demo</a>
+		<a id="banner" href="http://larsjung.de/qrcode/">{{pkg.displayName}} {{pkg.version}}</a>
 		<hr/>
 		<label for="render">RENDER MODE</label>
 		<select id="render">
@@ -43,7 +43,7 @@
 		<textarea id="text">http://larsjung.de/qrcode/</textarea>
 		<hr/>
 		<label for="minversion">MINVERSION:</label>
-		<input id="minversion" type="range" value="5" min="1" max="10" step="1" />
+		<input id="minversion" type="range" value="6" min="1" max="10" step="1" />
 		<label for="eclevel">ERROR CORRECTION LEVEL</label>
 		<select id="eclevel">
 			<option value="L">L - Low (7%)</option>
@@ -55,8 +55,8 @@
 		<input id="quiet" type="range" value="1" min="0" max="4" step="1" />
 		<label for="radius">CORNER RADIUS (not in Opera):</label>
 		<input id="radius" type="range" value="50" min="0" max="50" step="10" />
-		<hr/>
-		<a id="download" download="qrcode.png">DOWNLOAD</a>
+		<!-- <hr/> -->
+		<!-- <a id="download" download="qrcode.png">DOWNLOAD</a> -->
 	</div>
 
 	<div class="control right">
@@ -71,16 +71,16 @@
 		<hr/>
 		<label for="label">LABEL</label>
 		<input id="label" type="text" value="jQuery.qrcode" />
-		<label for="font">FONT</label>
-		<input id="font" type="text" value="Ubuntu" />
-		<label for="fontsize">FONT HEIGHT:</label>
+		<label for="fontsize">LABEL SIZE:</label>
 		<input id="fontsize" type="range" value="11" min="1" max="20" step="1" />
+		<label for="font">FONT NAME</label>
+		<input id="font" type="text" value="Ubuntu" />
 		<label for="fontcolor">FONT COLOR:</label>
 		<input id="fontcolor" type="color" value="#ff9818" />
 		<hr/>
 		<label for="image">IMAGE</label>
 		<input id="image" type="file" />
-		<label for="imagesize">IMAGE HEIGHT:</label>
+		<label for="imagesize">IMAGE SIZE:</label>
 		<input id="imagesize" type="range" value="13" min="1" max="30" step="1" />
 	</div>
 

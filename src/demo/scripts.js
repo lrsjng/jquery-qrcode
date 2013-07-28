@@ -23,8 +23,7 @@ var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]',
 
 	updateQrCode = function () {
 
-		var mode = parseInt($("#mode").val(), 10),
-			options = {
+		var options = {
 				render: $("#render").val(),
 				ecLevel: $("#eclevel").val(),
 				minVersion: parseInt($("#minversion").val(), 10),
@@ -35,6 +34,8 @@ var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]',
 				radius: parseInt($("#radius").val(), 10) * 0.01,
 				quiet: parseInt($("#quiet").val(), 10),
 
+				mode: parseInt($("#mode").val(), 10),
+
 				label: $("#label").val(),
 				labelsize: parseInt($("#fontsize").val(), 10) * 0.01,
 				fontname: $("#font").val(),
@@ -43,14 +44,6 @@ var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]',
 				image: $("#img-buffer")[0],
 				imagesize: parseInt($("#imagesize").val(), 10) * 0.01
 			};
-
-		if (mode === 1 || mode === 2) {
-			options.ext = 'label';
-			options.boxed = mode === 2;
-		} else if (mode === 3 || mode === 4) {
-			options.ext = 'image';
-			options.boxed = mode === 4;
-		}
 
 		$("#container").empty().qrcode(options);
 	},

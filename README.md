@@ -13,9 +13,11 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 
 ### develop branch
 
-* adds options to set version range
-* adds optioinal label or image
+* adds version range
+* adds quiet zone
+* adds optional label or image
 * adds rounded corners
+* adds image output
 * adds demo
 
 

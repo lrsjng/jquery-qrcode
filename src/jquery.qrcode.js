@@ -93,12 +93,12 @@
 				sb = st + sh,
 				pad = 0.01;
 
-			if (settings.boxed) {
-				// Box
-				qr.addBlank(sl - pad, st - pad, sr + pad, sb + pad);
-			} else {
+			if (settings.mode === 1) {
 				// Strip
 				qr.addBlank(0, st - pad, size, sb + pad);
+			} else {
+				// Box
+				qr.addBlank(sl - pad, st - pad, sr + pad, sb + pad);
 			}
 
 			context.fillStyle = settings.fontcolor;
@@ -109,9 +109,8 @@
 
 		drawBackgroundImage = function (qr, context, settings) {
 
-			var size = settings.size;
-
-			var w = settings.image.naturalWidth || 1,
+			var size = settings.size,
+				w = settings.image.naturalWidth || 1,
 				h = settings.image.naturalHeight || 1,
 				sh = settings.imagesize,
 				sw = sh * w / h,
@@ -121,13 +120,14 @@
 				sb = st + sh,
 				pad = 0.01;
 
-			if (settings.boxed) {
-				// Box
-				qr.addBlank(sl - pad, st - pad, sr + pad, sb + pad);
-			} else {
+			if (settings.mode === 3) {
 				// Strip
 				qr.addBlank(0, st - pad, size, sb + pad);
+			} else {
+				// Box
+				qr.addBlank(sl - pad, st - pad, sr + pad, sb + pad);
 			}
+
 			context.drawImage(settings.image, sl*size, st*size, sw*size, sh*size);
 		},
 
@@ -138,9 +138,10 @@
 				context.fillRect(settings.left, settings.top, settings.size, settings.size);
 			}
 
-			if (settings.ext === 'label') {
+			var mode = settings.mode;
+			if (mode === 1 || mode === 2) {
 				drawBackgroundLabel(qr, context, settings);
-			} else if (settings.ext === 'image') {
+			} else if (mode === 3 || mode === 4) {
 				drawBackgroundImage(qr, context, settings);
 			}
 		},
@@ -413,8 +414,13 @@
 			// quiet zone in modules
 			quiet: 0,
 
-			// extras: 'label' or 'image'
-			extra: null,
+			// modes
+			// 0: normal
+			// 1: label strip
+			// 2: label box
+			// 3: image strip
+			// 4: image box
+			mode: 0,
 
 			label: 'no label',
 			labelsize: 0.1,
@@ -422,9 +428,7 @@
 			fontcolor: '#000',
 
 			image: null,
-			imagesize: 0.1,
-
-			boxed: true
+			imagesize: 0.1
 		};
 
 	// Register the plugin
