@@ -8,7 +8,7 @@
 
 
 		// Wrapper for the original QR code generator.
-	var QRCode = function (version, level, text) {
+	var QRCode = function (text, level, version, quiet) {
 
 			// `qrcode` is the single public function that will be defined by the `QR Code Generator`
 			// at the end of the file.
@@ -16,38 +16,43 @@
 			qr.addData(text);
 			qr.make();
 
-			var moduleCount = qr.getModuleCount(),
-				isDark = function (col, row) {
+			quiet = quiet || 0;
 
-					return qr.isDark(col, row);
-				},
-				extIsDarkFn = function (width, height, blank) {
+			var qrModuleCount = qr.getModuleCount(),
+				quietModuleCount = qr.getModuleCount() + 2*quiet,
+				isDark = function (row, col) {
 
-					if (!blank) {
-						return isDark;
+					row -= quiet;
+					col -= quiet;
+
+					if (row < 0 || row >= qrModuleCount || col < 0 || col >= qrModuleCount) {
+						return false;
 					}
 
-					var moduleCount = qr.getModuleCount(),
-						moduleWidth = width / moduleCount,
-						moduleHeight = height / moduleCount;
+					return qr.isDark(row, col);
+				},
+				addBlank = function (l, t, r, b) {
 
-					return function (row, col) {
+					var prevIsDark = this.isDark,
+						moduleSize = 1 / quietModuleCount;
 
-						var l = col * moduleWidth,
-							t = row * moduleHeight,
-							r = l + moduleWidth,
-							b = t + moduleHeight;
+					this.isDark = function (row, col) {
 
-						return isDark(row, col) && (blank.l > r || l > blank.r || blank.t > b || t > blank.b);
+						var ml = col * moduleSize,
+							mt = row * moduleSize,
+							mr = ml + moduleSize,
+							mb = mt + moduleSize;
+
+						return prevIsDark(row, col) && (l > mr || ml > r || t > mb || mt > b);
 					};
 				};
 
-			this.version = version;
-			this.level = level;
 			this.text = text;
-			this.moduleCount = moduleCount;
+			this.level = level;
+			this.version = version;
+			this.moduleCount = quietModuleCount;
 			this.isDark = isDark;
-			this.extIsDarkFn = extIsDarkFn;
+			this.addBlank = addBlank;
 		},
 
 		// Check if canvas is available in the browser (as Modernizr does)
@@ -57,62 +62,230 @@
 			return !!(elem.getContext && elem.getContext('2d'));
 		}()),
 
+		arcToAvailable = Object.prototype.toString.call(window.opera) !== '[object Opera]',
+
 		// Returns a minimal QR code for the given text starting with version `minVersion`.
 		// Returns `null` if `text` is too long to be encoded in `maxVersion`.
-		createBestQr = function (minVersion, maxVersion, level, text) {
+		createQRCode = function (text, level, minVersion, maxVersion, quiet) {
 
-			minVersion = Math.max(1, minVersion);
-			maxVersion = Math.min(40, maxVersion);
+			minVersion = Math.max(1, minVersion || 1);
+			maxVersion = Math.min(40, maxVersion || 40);
 			for (var version = minVersion; version <= maxVersion; version += 1) {
 				try {
-					return new QRCode(version, level, text);
+					return new QRCode(text, level, version, quiet);
 				} catch (err) {}
 			}
+		},
 
-			return null;
+		drawBackgroundLabel = function (qr, context, settings) {
+
+			var font = "bold " + (settings.labelsize * settings.size) + "px " + settings.fontname,
+				ctx = $('<canvas/>')[0].getContext("2d");
+
+			ctx.font = font;
+
+			var w = ctx.measureText(settings.label).width,
+				sh = settings.labelsize,
+				sw = w / settings.size,
+				sl = (1 - sw)/2,
+				st = (1 - sh)/2,
+				sr = sl + sw,
+				sb = st + sh,
+				pad = 0.01;
+
+			if (settings.boxed) {
+				// Box
+				qr.addBlank(sl - pad, st - pad, sr + pad, sb + pad);
+			} else {
+				// Strip
+				qr.addBlank(0, st - pad, size, sb + pad);
+			}
+
+			context.fillStyle = settings.fontcolor;
+			context.textAlign = "center";
+			context.font = font;
+			context.fillText($("#label").val(), 0.5 * settings.size, 0.5 * settings.size + 0.3 * settings.labelsize * settings.size);
+		},
+
+		drawBackgroundImage = function (qr, context, settings) {
+
+			var size = settings.size;
+
+			var w = settings.image.naturalWidth || 1,
+				h = settings.image.naturalHeight || 1,
+				sh = settings.imagesize,
+				sw = sh * w / h,
+				sl = (1 - sw)/2,
+				st = (1 - sh)/2,
+				sr = sl + sw,
+				sb = st + sh,
+				pad = 0.01;
+
+			if (settings.boxed) {
+				// Box
+				qr.addBlank(sl - pad, st - pad, sr + pad, sb + pad);
+			} else {
+				// Strip
+				qr.addBlank(0, st - pad, size, sb + pad);
+			}
+			context.drawImage(settings.image, sl*size, st*size, sw*size, sh*size);
+		},
+
+		drawBackground = function (qr, context, settings) {
+
+			if (settings.bgColor) {
+				context.fillStyle = settings.bgColor;
+				context.fillRect(settings.left, settings.top, settings.size, settings.size);
+			}
+
+			if (settings.ext === 'label') {
+				drawBackgroundLabel(qr, context, settings);
+			} else if (settings.ext === 'image') {
+				drawBackgroundImage(qr, context, settings);
+			}
+		},
+
+		drawModuleDefault = function (qr, context, settings, left, top, width, row, col) {
+
+			if (qr.isDark(row, col)) {
+				context.rect(left, top, width, width);
+			}
+		},
+
+		drawModuleRoundedDark = function (ctx, l, t, r, b, rad, nw, ne, se, sw) {
+
+			if (nw) {
+				ctx.moveTo(l + rad, t);
+			} else {
+				ctx.moveTo(l, t);
+			}
+
+			if (ne) {
+				ctx.lineTo(r - rad, t);
+				ctx.arcTo(r, t, r, b, rad);
+			} else {
+				ctx.lineTo(r, t);
+			}
+
+			if (se) {
+				ctx.lineTo(r, b - rad);
+				ctx.arcTo(r, b, l, b, rad);
+			} else {
+				ctx.lineTo(r, b);
+			}
+
+			if (sw) {
+				ctx.lineTo(l + rad, b);
+				ctx.arcTo(l, b, l, t, rad);
+			} else {
+				ctx.lineTo(l, b);
+			}
+
+			if (nw) {
+				ctx.lineTo(l, t + rad);
+				ctx.arcTo(l, t, r, t, rad);
+			} else {
+				ctx.lineTo(l, t);
+			}
+		},
+
+		drawModuleRoundendLight = function (ctx, l, t, r, b, rad, nw, ne, se, sw) {
+
+			if (nw) {
+				ctx.moveTo(l + rad, t);
+				ctx.lineTo(l, t);
+				ctx.lineTo(l, t + rad);
+				ctx.arcTo(l, t, l + rad, t, rad);
+			}
+
+			if (ne) {
+				ctx.moveTo(r - rad, t);
+				ctx.lineTo(r, t);
+				ctx.lineTo(r, t + rad);
+				ctx.arcTo(r, t, r - rad, t, rad);
+			}
+
+			if (se) {
+				ctx.moveTo(r - rad, b);
+				ctx.lineTo(r, b);
+				ctx.lineTo(r, b - rad);
+				ctx.arcTo(r, b, r - rad, b, rad);
+			}
+
+			if (sw) {
+				ctx.moveTo(l + rad, b);
+				ctx.lineTo(l, b);
+				ctx.lineTo(l, b - rad);
+				ctx.arcTo(l, b, l + rad, b, rad);
+			}
+		},
+
+		drawModuleRounded = function (qr, context, settings, left, top, width, row, col) {
+
+			var isDark = qr.isDark,
+				right = left + width,
+				bottom = top + width,
+				radius = settings.radius * width,
+				rowT = row - 1,
+				rowB = row + 1,
+				colL = col - 1,
+				colR = col + 1,
+				center = isDark(row, col),
+				northwest = isDark(rowT, colL),
+				north = isDark(rowT, col),
+				northeast = isDark(rowT, colR),
+				east = isDark(row, colR),
+				southeast = isDark(rowB, colR),
+				south = isDark(rowB, col),
+				southwest = isDark(rowB, colL),
+				west = isDark(row, colL);
+
+			if (center) {
+				drawModuleRoundedDark(context, left, top, right, bottom, radius, !north && !west, !north && !east, !south && !east, !south && !west);
+			} else {
+				drawModuleRoundendLight(context, left, top, right, bottom, radius, north && west && northwest, north && east && northeast, south && east && southeast, south && west && southwest);
+			}
+		},
+
+		drawModules = function (qr, context, settings) {
+
+			var moduleCount = qr.moduleCount,
+				moduleSize = settings.size / moduleCount,
+				fn = drawModuleDefault,
+				row, col;
+
+			if (arcToAvailable && settings.radius > 0 && settings.radius <= 0.5) {
+				fn = drawModuleRounded;
+			}
+
+			context.beginPath();
+			for (row = 0; row < moduleCount; row += 1) {
+				for (col = 0; col < moduleCount; col += 1) {
+
+					var l = settings.left + col * moduleSize,
+						t = settings.top + row * moduleSize,
+						w = moduleSize;
+
+					fn(qr, context, settings, l, t, w, row, col);
+				}
+			}
+			context.fillStyle = settings.color;
+			context.fill();
 		},
 
 		// Draws QR code to the given `canvas` and returns it.
 		drawOnCanvas = function (canvas, settings) {
 
-				// some shortcuts to improve compression
-			var settings_left = settings.left,
-				settings_top = settings.top,
-				settings_width = settings.width,
-				settings_height = settings.height,
-				settings_color = settings.color,
-				settings_bgColor = settings.bgColor,
-				settings_blank = settings.blank,
-
-				qr = createBestQr(settings.minVersion, settings.maxVersion, settings.ecLevel, settings.text),
-				$canvas = $(canvas),
-				ctx = $canvas[0].getContext('2d');
-
-			if (settings_bgColor) {
-				ctx.fillStyle = settings_bgColor;
-				ctx.fillRect(settings_left, settings_top, settings_width, settings_height);
+			var qr = createQRCode(settings.text, settings.ecLevel, settings.minVersion, settings.maxVersion, settings.quiet);
+			if (!qr) {
+				return null;
 			}
 
-			if (qr) {
-				$canvas.data('qrcode', qr);
+			var $canvas = $(canvas).data('qrcode', qr),
+				context = $canvas[0].getContext('2d');
 
-				var moduleCount = qr.moduleCount,
-					moduleWidth = settings_width / moduleCount,
-					moduleHeight = settings_height / moduleCount,
-					isDarkFn = qr.extIsDarkFn(settings_width, settings_height, settings_blank),
-					row, col;
-
-				ctx.beginPath();
-				for (row = 0; row < moduleCount; row += 1) {
-					for (col = 0; col < moduleCount; col += 1) {
-						if (isDarkFn(row, col)) {
-							ctx.rect(settings_left + col * moduleWidth, settings_top + row * moduleHeight, moduleWidth, moduleHeight);
-						}
-					}
-				}
-				ctx.fillStyle = settings_color;
-				ctx.fill();
-			}
+			drawBackground(qr, context, settings);
+			drawModules(qr, context, settings);
 
 			return $canvas;
 		},
@@ -120,74 +293,71 @@
 		// Returns a `canvas` element representing the QR code for the given settings.
 		createCanvas = function (settings) {
 
-			var $canvas = $('<canvas/>').attr('width', settings.width).attr('height', settings.height);
-
+			var $canvas = $('<canvas/>').attr('width', settings.size).attr('height', settings.size);
 			return drawOnCanvas($canvas, settings);
 		},
 
 		// Returns an `image` element representing the QR code for the given settings.
 		createImage = function (settings) {
 
-			return $('<img />').attr('src', createCanvas(settings).toDataURL('image/png'));
+			return $('<img/>').attr('src', createCanvas(settings)[0].toDataURL('image/png'));
 		},
 
 		// Returns a `div` element representing the QR code for the given settings.
 		createDiv = function (settings) {
 
+			var qr = createQRCode(settings.text, settings.ecLevel, settings.minVersion, settings.maxVersion, settings.quiet);
+			if (!qr) {
+				return null;
+			}
+
 				// some shortcuts to improve compression
-			var settings_width = settings.width,
-				settings_height = settings.height,
-				settings_color = settings.color,
+			var settings_size = settings.size,
 				settings_bgColor = settings.bgColor,
 				math_floor = Math.floor,
 
-				qr = createBestQr(settings.minVersion, settings.maxVersion, settings.ecLevel, settings.text),
-				$div = $('<div/>').css({
-										position: 'relative',
-										left: 0,
-										top: 0,
-										padding: 0,
-										margin: 0,
-										width: settings_width,
-										height: settings_height
-									});
+				moduleCount = qr.moduleCount,
+				moduleSize = math_floor(settings_size / moduleCount),
+				offset = math_floor(0.5 * (settings_size - moduleSize * moduleCount)),
+
+				row, col,
+
+				containerCSS = {
+					position: 'relative',
+					left: 0,
+					top: 0,
+					padding: 0,
+					margin: 0,
+					width: settings_size,
+					height: settings_size
+				},
+				darkCSS = {
+					position: 'absolute',
+					padding: 0,
+					margin: 0,
+					width: moduleSize,
+					height: moduleSize,
+					'background-color': settings.color
+				},
+
+				$div = $('<div/>').data('qrcode', qr).css(containerCSS);
 
 			if (settings_bgColor) {
 				$div.css('background-color', settings_bgColor);
 			}
 
-			if (qr) {
-				$div.data('qrcode', qr);
-
-				var moduleCount = qr.moduleCount,
-					moduleWidth = math_floor(settings_width / moduleCount),
-					moduleHeight = math_floor(settings_height / moduleCount),
-					offsetLeft = math_floor(0.5 * (settings_width - moduleWidth * moduleCount)),
-					offsetTop = math_floor(0.5 * (settings_height - moduleHeight * moduleCount)),
-					row, col;
-
-				for (row = 0; row < moduleCount; row += 1) {
-					for (col = 0; col < moduleCount; col += 1) {
-						if (qr.isDark(row, col)) {
-							$('<div/>')
-								.css({
-									left: offsetLeft + col * moduleWidth,
-									top: offsetTop + row * moduleHeight
-								})
-								.appendTo($div);
-						}
+			for (row = 0; row < moduleCount; row += 1) {
+				for (col = 0; col < moduleCount; col += 1) {
+					if (qr.isDark(row, col)) {
+						$('<div/>')
+							.css(darkCSS)
+							.css({
+								left: offset + col * moduleSize,
+								top: offset + row * moduleSize
+							})
+							.appendTo($div);
 					}
 				}
-
-				$div.children()
-							.css({
-								position: 'absolute',
-								padding: 0,
-								margin: 0,
-								width: moduleWidth,
-								height: moduleHeight,
-								'background-color': settings_color
-							});
 			}
 
 			return $div;
@@ -211,23 +381,22 @@
 		// ----------------
 		defaults = {
 
-			// render method: `'canvas'` or `'div'`
+			// render method: `'canvas'`, `'image'` or `'div'`
 			render: 'canvas',
 
-			// version range somewhere in 1..40
-			minVersion: 2,
+			// version range somewhere in 1 .. 40
+			minVersion: 1,
 			maxVersion: 40,
 
 			// error correction level: `'L'`, `'M'`, `'Q'` or `'H'`
 			ecLevel: 'L',
 
-			// left and top in pixel if drawn onto existing canvas
+			// offset in pixel if drawn onto existing canvas
 			left: 0,
 			top: 0,
 
-			// width and height in pixel
-			width: 256,
-			height: 256,
+			// size in pixel
+			size: 200,
 
 			// code color
 			color: '#000',
@@ -235,11 +404,27 @@
 			// background color, `null` for transparent background
 			bgColor: null,
 
-			// the encoded text
+			// content
 			text: 'no text',
 
-			// blank space: {l: 0, t: 0, r: 0, b: 0} in px relative to QR code space
-			blank: null
+			// corner radius relative to module width: 0.0 .. 0.5
+			radius: 0,
+
+			// quiet zone in modules
+			quiet: 0,
+
+			// extras: 'label' or 'image'
+			extra: null,
+
+			label: 'no label',
+			labelsize: 0.1,
+			fontname: 'sans',
+			fontcolor: '#000',
+
+			image: null,
+			imagesize: 0.1,
+
+			boxed: true
 		};
 
 	// Register the plugin
