@@ -31,6 +31,7 @@ var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]',
 
 				fill: $("#fill").val(),
 				background: $("#background").val(),
+				// fill: $("#img-buffer")[0],
 
 				text: $("#text").val(),
 				size: parseInt($("#size").val(), 10),

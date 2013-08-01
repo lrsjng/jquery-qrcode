@@ -273,6 +273,14 @@
 				}
 			}
 			if ($(settings.fill).is('img')) {
+				context.strokeStyle = 'rgba(0,0,0,0.5)';
+				context.lineWidth = 2;
+				context.stroke();
+				var prev = context.globalCompositeOperation;
+				context.globalCompositeOperation = "destination-out";
+				context.fill();
+				context.globalCompositeOperation = prev;
+
 				context.clip();
 				context.drawImage(settings.fill, 0, 0, settings.size, settings.size);
 				context.restore();
