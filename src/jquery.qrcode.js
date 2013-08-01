@@ -79,16 +79,17 @@
 
 		drawBackgroundLabel = function (qr, context, settings) {
 
-			var font = "bold " + (settings.labelsize * settings.size) + "px " + settings.fontname,
+			var size = settings.size,
+				font = "bold " + (settings.mSize * size) + "px " + settings.fontname,
 				ctx = $('<canvas/>')[0].getContext("2d");
 
 			ctx.font = font;
 
 			var w = ctx.measureText(settings.label).width,
-				sh = settings.labelsize,
-				sw = w / settings.size,
-				sl = (1 - sw)/2,
-				st = (1 - sh)/2,
+				sh = settings.mSize,
+				sw = w / size,
+				sl = (1 - sw) * settings.mPosX,
+				st = (1 - sh) * settings.mPosY,
 				sr = sl + sw,
 				sb = st + sh,
 				pad = 0.01;
@@ -102,9 +103,8 @@
 			}
 
 			context.fillStyle = settings.fontcolor;
-			context.textAlign = "center";
 			context.font = font;
-			context.fillText($("#label").val(), 0.5 * settings.size, 0.5 * settings.size + 0.3 * settings.labelsize * settings.size);
+			context.fillText($("#label").val(), sl*size, st*size + 0.75 * settings.mSize * size);
 		},
 
 		drawBackgroundImage = function (qr, context, settings) {
@@ -112,10 +112,10 @@
 			var size = settings.size,
 				w = settings.image.naturalWidth || 1,
 				h = settings.image.naturalHeight || 1,
-				sh = settings.imagesize,
+				sh = settings.mSize,
 				sw = sh * w / h,
-				sl = (1 - sw)/2,
-				st = (1 - sh)/2,
+				sl = (1 - sw) * settings.mPosX,
+				st = (1 - sh) * settings.mPosY,
 				sr = sl + sw,
 				sb = st + sh,
 				pad = 0.01;
@@ -133,8 +133,10 @@
 
 		drawBackground = function (qr, context, settings) {
 
-			if (settings.bgColor) {
-				context.fillStyle = settings.bgColor;
+			if ($(settings.background).is('img')) {
+				context.drawImage(settings.background, 0, 0, settings.size, settings.size);
+			} else if (settings.background) {
+				context.fillStyle = settings.background;
 				context.fillRect(settings.left, settings.top, settings.size, settings.size);
 			}
 
@@ -270,8 +272,14 @@
 					fn(qr, context, settings, l, t, w, row, col);
 				}
 			}
-			context.fillStyle = settings.color;
-			context.fill();
+			if ($(settings.fill).is('img')) {
+				context.clip();
+				context.drawImage(settings.fill, 0, 0, settings.size, settings.size);
+				context.restore();
+			} else {
+				context.fillStyle = settings.fill;
+				context.fill();
+			}
 		},
 
 		// Draws QR code to the given `canvas` and returns it.
@@ -314,7 +322,7 @@
 
 				// some shortcuts to improve compression
 			var settings_size = settings.size,
-				settings_bgColor = settings.bgColor,
+				settings_bgColor = settings.background,
 				math_floor = Math.floor,
 
 				moduleCount = qr.moduleCount,
@@ -338,7 +346,7 @@
 					margin: 0,
 					width: moduleSize,
 					height: moduleSize,
-					'background-color': settings.color
+					'background-color': settings.fill
 				},
 
 				$div = $('<div/>').data('qrcode', qr).css(containerCSS);
@@ -399,11 +407,11 @@
 			// size in pixel
 			size: 200,
 
-			// code color
-			color: '#000',
+			// code color or image element
+			fill: '#000',
 
-			// background color, `null` for transparent background
-			bgColor: null,
+			// background color or image element, `null` for transparent background
+			background: null,
 
 			// content
 			text: 'no text',
@@ -422,13 +430,15 @@
 			// 4: image box
 			mode: 0,
 
+			mSize: 0.1,
+			mPosX: 0.5,
+			mPosY: 0.5,
+
 			label: 'no label',
-			labelsize: 0.1,
 			fontname: 'sans',
 			fontcolor: '#000',
 
-			image: null,
-			imagesize: 0.1
+			image: null
 		};
 
 	// Register the plugin

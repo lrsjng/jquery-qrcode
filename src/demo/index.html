@@ -35,14 +35,14 @@
 		<hr/>
 		<label for="size">SIZE:</label>
 		<input id="size" type="range" value="400" min="100" max="1000" step="50" />
-		<label for="color">COLOR</label>
-		<input id="color" type="color" value="#333333" />
-		<label for="bg-color">BACKGROUND COLOR</label>
-		<input id="bg-color" type="color" value="#ffffff" />
+		<label for="fill">FILL</label>
+		<input id="fill" type="color" value="#333333" />
+		<label for="background">BACKGROUND</label>
+		<input id="background" type="color" value="#ffffff" />
 		<label for="text">CONTENT</label>
 		<textarea id="text">http://larsjung.de/qrcode/</textarea>
 		<hr/>
-		<label for="minversion">MINVERSION:</label>
+		<label for="minversion">MIN VERSION:</label>
 		<input id="minversion" type="range" value="6" min="1" max="10" step="1" />
 		<label for="eclevel">ERROR CORRECTION LEVEL</label>
 		<select id="eclevel">
@@ -69,10 +69,15 @@
 			<option value="4">4 - Image-Box</option>
 		</select>
 		<hr/>
+		<label for="msize">SIZE:</label>
+		<input id="msize" type="range" value="11" min="0" max="40" step="1" />
+		<label for="mposx">POS X:</label>
+		<input id="mposx" type="range" value="50" min="0" max="100" step="1" />
+		<label for="mposy">POS Y:</label>
+		<input id="mposy" type="range" value="50" min="0" max="100" step="1" />
+		<hr/>
 		<label for="label">LABEL</label>
 		<input id="label" type="text" value="jQuery.qrcode" />
-		<label for="fontsize">LABEL SIZE:</label>
-		<input id="fontsize" type="range" value="11" min="1" max="20" step="1" />
 		<label for="font">FONT NAME</label>
 		<input id="font" type="text" value="Ubuntu" />
 		<label for="fontcolor">FONT COLOR:</label>
@@ -80,8 +85,6 @@
 		<hr/>
 		<label for="image">IMAGE</label>
 		<input id="image" type="file" />
-		<label for="imagesize">IMAGE SIZE:</label>
-		<input id="imagesize" type="range" value="13" min="1" max="30" step="1" />
 	</div>
 
 	<img id="img-buffer" src="dummy.png" />

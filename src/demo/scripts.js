@@ -6,8 +6,9 @@ var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]',
 		["minversion", ""],
 		["quiet", "modules"],
 		["radius", "%"],
-		["fontsize", "%"],
-		["imagesize", "%"]
+		["msize", "%"],
+		["mposx", "%"],
+		["mposy", "%"]
 	],
 
 	updateGui = function () {
@@ -27,8 +28,10 @@ var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]',
 				render: $("#render").val(),
 				ecLevel: $("#eclevel").val(),
 				minVersion: parseInt($("#minversion").val(), 10),
-				color: $("#color").val(),
-				bgColor: $("#bg-color").val(),
+
+				fill: $("#fill").val(),
+				background: $("#background").val(),
+
 				text: $("#text").val(),
 				size: parseInt($("#size").val(), 10),
 				radius: parseInt($("#radius").val(), 10) * 0.01,
@@ -36,13 +39,15 @@ var isOpera = Object.prototype.toString.call(window.opera) == '[object Opera]',
 
 				mode: parseInt($("#mode").val(), 10),
 
+				mSize: parseInt($("#msize").val(), 10) * 0.01,
+				mPosX: parseInt($("#mposx").val(), 10) * 0.01,
+				mPosY: parseInt($("#mposy").val(), 10) * 0.01,
+
 				label: $("#label").val(),
-				labelsize: parseInt($("#fontsize").val(), 10) * 0.01,
 				fontname: $("#font").val(),
 				fontcolor: $("#fontcolor").val(),
 
-				image: $("#img-buffer")[0],
-				imagesize: parseInt($("#imagesize").val(), 10) * 0.01
+				image: $("#img-buffer")[0]
 			};
 
 		$("#container").empty().qrcode(options);
