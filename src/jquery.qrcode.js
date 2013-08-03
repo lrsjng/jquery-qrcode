@@ -104,7 +104,7 @@
 
 			context.fillStyle = settings.fontcolor;
 			context.font = font;
-			context.fillText($("#label").val(), sl*size, st*size + 0.75 * settings.mSize * size);
+			context.fillText(settings.label, sl*size, st*size + 0.75 * settings.mSize * size);
 		},
 
 		drawBackgroundImage = function (qr, context, settings) {
