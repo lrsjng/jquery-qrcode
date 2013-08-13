@@ -337,7 +337,8 @@
 				moduleSize = math_floor(settings_size / moduleCount),
 				offset = math_floor(0.5 * (settings_size - moduleSize * moduleCount)),
 
-				row, col,
+				row, col,			
+				
 
 				containerCSS = {
 					position: 'relative',
@@ -365,14 +366,78 @@
 
 			for (row = 0; row < moduleCount; row += 1) {
 				for (col = 0; col < moduleCount; col += 1) {
-					if (qr.isDark(row, col)) {
-						$('<div/>')
-							.css(darkCSS)
-							.css({
+					
+					var rowT = row - 1,
+					rowB = row + 1,
+					colL = col - 1,
+					colR = col + 1,
+					center = qr.isDark(row, col),
+					northwest = qr.isDark(rowT, colL),
+					north = qr.isDark(rowT, col),
+					northeast = qr.isDark(rowT, colR),
+					east = qr.isDark(row, colR),
+					southeast = qr.isDark(rowB, colR),
+					south = qr.isDark(rowB, col),
+					southwest = qr.isDark(rowB, colL),
+					west = qr.isDark(row, colL);
+					
+					if (center) { //it's dark cell
+						var thenewdiv=$('<div/>')
+								.css(darkCSS)
+								.css({
 								left: offset + col * moduleSize,
 								top: offset + row * moduleSize
-							})
-							.appendTo($div);
+								});
+						if(!north && !west && !northwest){
+							thenewdiv.css('border-top-left-radius',settings.radius*moduleSize+'px');						
+						}
+						
+						if(!north && !east && !northeast) {
+							thenewdiv.css('border-top-right-radius',settings.radius*moduleSize+'px');							
+						}
+						
+						if(!south && !east && !southeast) {
+							thenewdiv.css('border-bottom-right-radius',settings.radius*moduleSize+'px');
+						}
+						
+						if(!south && !west && !southwest) {
+							thenewdiv.css('border-bottom-left-radius',settings.radius*moduleSize+'px');
+						}
+						thenewdiv.appendTo($div);
+					}
+					else { // it's a ligth cell
+							console.log('*light('+col+','+row+')');
+						var thenewdiv=$('<div/>')
+							.css({
+							backgroundColor:settings.background,
+							padding:0,
+							margin:0,
+							height:moduleSize,
+							width:moduleSize,
+							});
+						if(north && west){
+							thenewdiv.css('border-top-left-radius',settings.radius*moduleSize+'px');						
+						}
+						
+						if(north && east) {
+							thenewdiv.css('border-top-right-radius',settings.radius*moduleSize+'px');							
+						}
+						
+						if(south && east) {
+							thenewdiv.css('border-bottom-right-radius',settings.radius*moduleSize+'px');
+						}
+						
+						if(south && west) {
+							thenewdiv.css('border-bottom-left-radius',settings.radius*moduleSize+'px');
+						}
+						var theBgNewDiv=$('<div/>')
+							.css(darkCSS)
+							.css({
+							left: offset + col * moduleSize,
+							top: offset + row * moduleSize
+							});
+						thenewdiv.appendTo(theBgNewDiv);
+						theBgNewDiv.appendTo($div);
 					}
 				}
 			}
