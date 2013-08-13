@@ -445,12 +445,70 @@
 			return $div;
 		},
 
+		// Returns an `svg` element representing the QR code for the given settings.
+		createSvg = function (settings) {
+			try {
+				var qr = createQRCode(settings.text, settings.ecLevel, settings.minVersion, settings.maxVersion, settings.quiet);
+	        	}
+	        	catch (err) {
+	            		console.log(err);
+	           		var errorChild = document.createElement("p");
+	            		var errorMSG = document.createTextNode("QR Code FAIL! " + err);
+	            		errorChild.appendChild(errorMSG);
+	            		return errorChild;
+	        	}
+	        
+			// some shortcuts to improve compression
+	       		var settings_size = settings.size,
+	        	background = settings.background,
+	        	fill = settings.fill,
+			moduleCount = qr.moduleCount,
+			moduleSize = Math.floor(settings_size / moduleCount),
+			offset = Math.floor(0.5 * (settings_size - moduleSize * moduleCount)),
+			row, col;
+	        
+	        	// create a SVG
+	        	var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+	        	svg.setAttribute("version", "1.2");
+	        	svg.setAttribute("baseProfile", "tiny");
+	        	svg.setAttribute('width', moduleCount * moduleSize);
+	       		svg.setAttribute('height', moduleCount * moduleSize);
+	        
+	        	// background
+	        	var bg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+	       		bg.setAttribute("x", 0);
+	        	bg.setAttribute("y", 0);
+	        	bg.setAttribute("width", moduleCount * moduleSize);
+	        	bg.setAttribute("height", moduleCount * moduleSize);
+	        	bg.setAttribute("fill", background);
+	        	svg.appendChild(bg);
+
+	        	// draw QR Code
+	        	for (row = 0; row < moduleCount; row += 1) {
+				for (col = 0; col < moduleCount; col += 1) {
+					if (qr.isDark(row, col)) {
+						var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+	                    			rect.setAttribute("x", col * moduleSize);
+	                    			rect.setAttribute("y", row * moduleSize);
+	                    			rect.setAttribute("width", moduleSize);
+	                    			rect.setAttribute("height", moduleSize);
+	                    			rect.setAttribute("fill", fill);
+	                   			 svg.appendChild(rect);
+					}
+				}
+			}
+	        
+	        	return svg;
+		},
+
 		createHTML = function (settings) {
 
 			if (canvasAvailable && settings.render === 'canvas') {
 				return createCanvas(settings);
 			} else if (canvasAvailable && settings.render === 'image') {
 				return createImage(settings);
+			} else if (settings.render === 'svg') {
+				return createSvg(settings);
 			}
 
 			return createDiv(settings);
