@@ -101,10 +101,7 @@ input, textarea, select {
 
 input[type="range"] {
 	-webkit-appearance: none;
-/*	height: 8px;
-	margin-top: 4px;
-	margin-bottom: 4px;
-*/	cursor: pointer;
+	cursor: pointer;
 }
 input::-webkit-slider-thumb {
 	-webkit-appearance: none;
