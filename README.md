@@ -15,6 +15,7 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 
 * some fixes
 * adds image support for fore- and background
+* adds label and image positioning
 * updates build process
 
 

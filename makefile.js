@@ -2,152 +2,111 @@
 'use strict';
 
 
-var path = require('path'),
-	child_process = require('child_process');
-
-
-var pkg = require('./package.json'),
-
-	root = path.resolve(__dirname),
-	src = path.resolve(root, 'src'),
-	build = path.resolve(root, 'build'),
-
-	jshint = {
-		// Enforcing Options
-		bitwise: true,
-		curly: true,
-		eqeqeq: true,
-		forin: true,
-		latedef: true,
-		newcap: true,
-		noempty: true,
-		plusplus: true,
-		trailing: true,
-		undef: true,
-
-		// Environments
-		browser: true,
-
-		// Globals
-		predef: [
-			"jQuery", "qrcode"
-		]
-	},
-
-	mapperSrc = function (blob) {
-
-		return blob.source.replace(src, build);
-	},
-
-	mapperRoot = function (blob) {
-
-		return blob.source.replace(root, build);
-	};
-
-
 module.exports = function (make) {
 
-	var Event = make.Event,
+
+	var path = require('path'),
+		pkg = require('./package.json'),
+
 		$ = make.fQuery,
-		moment = make.moment,
-		stamp, replacements;
+
+		root = path.resolve(__dirname),
+		src = path.join(root, 'src'),
+		build = path.join(root, 'build');
 
 
-	make.version('>=0.8.1');
+	make.version('>=0.10.0');
 	make.defaults('release');
 
 
 	make.before(function () {
 
-		stamp = moment();
+		var moment = make.moment();
 
-		replacements = {
+		make.env = {
 			pkg: pkg,
-			stamp: stamp.format('YYYY-MM-DD HH:mm:ss')
+			stamp: moment.format('YYYY-MM-DD HH:mm:ss')
 		};
 
-		Event.info({ method: 'before', message: pkg.version + ' ' + replacements.stamp });
+		$.info({ method: 'before', message: pkg.version + ' ' + make.env.stamp });
 	});
 
 
 	make.target('check-version', [], 'add git info to dev builds').async(function (done, fail) {
 
-		if (!/-dev$/.test(pkg.version)) {
+		if (!/\+$/.test(pkg.version)) {
 			done();
 			return;
 		}
 
 		$.git(root, function (err, result) {
 
-			pkg.version += '-' + result.revListOriginMasterHead.length + '-' + result.revParseHead.slice(0, 7);
-			Event.info({
-				method: 'check-version',
-				message: 'version set to ' + pkg.version
-			});
+			pkg.version += result.buildSuffix;
+			$.info({ method: 'check-version', message: 'version set to ' + pkg.version });
 			done();
 		});
 	});
 
 
-	make.target('clean', [], 'delete build folder')
-		.sync(function () {
+	make.target('clean', [], 'delete build folder').sync(function () {
 
-			$.rmfr($.I_AM_SURE, build);
+		$.DELETE(build);
+	});
+
+
+	make.target('lint', [], 'lint all JavaScript files with JSHint').sync(function () {
+
+		var options = {
+				// Enforcing Options
+				bitwise: true,
+				curly: true,
+				eqeqeq: true,
+				forin: true,
+				latedef: true,
+				newcap: true,
+				noempty: true,
+				plusplus: true,
+				trailing: true,
+				undef: true,
+
+				// Environments
+				browser: true
+			},
+			global = {
+				'jQuery': true,
+				'qrcode': true
+			};
+
+		$(src + ': jquery.qrcode.js, demo/scripts.js').log(-3)
+			.jshint(options, global);
+	});
+
+
+	make.target('build', ['check-version'], 'build all updated files').sync(function () {
+
+		$(src + ': jquery.qrcode.js')
+			.includify()
+			.handlebars(make.env)
+			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.js'))
+			.uglifyjs()
+			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.min.js'));
+
+		$(src + ': **, ! *.js')
+			.handlebars(make.env)
+			.WRITE($.map.p(src, build));
+
+		$(root + ': README*, LICENSE*')
+			.handlebars(make.env)
+			.WRITE($.map.p(root, build));
+	});
+
+
+	make.target('release', ['clean', 'build'], 'create a zipball').async(function (done, fail) {
+
+		$(build + ': **').shzip({
+			target: path.join(build, pkg.name + '-' + pkg.version + '.zip'),
+			dir: build,
+			callback: done
 		});
-
-
-	make.target('lint', [], 'lint all JavaScript files with JSHint')
-		.sync(function () {
-
-			$(src + ': jquery.qrcode.js')
-				.jshint(jshint);
-		});
-
-
-	make.target('build', ['check-version'], 'build all updated files')
-		.sync(function () {
-
-			var scriptName = pkg.name;
-
-			$(src + '/demo/*')
-				.handlebars(replacements)
-				.write($.OVERWRITE, mapperSrc);
-
-			$(src + ': ' + scriptName + '.js')
-				.includify()
-				.handlebars(replacements)
-				.write($.OVERWRITE, path.join(build, scriptName + '-' + pkg.version + '.js'))
-				.write($.OVERWRITE, path.join(build, 'demo', scriptName + '.js'))
-				.uglifyjs()
-				.write($.OVERWRITE, path.join(build, scriptName + '-' + pkg.version + '.min.js'));
-
-			$(root + ': README*, LICENSE*')
-				.write($.OVERWRITE, mapperRoot);
-		});
-
-
-	make.target('release', ['clean', 'build'], 'create a zipball')
-		.async(function (done, fail) {
-
-			var target = path.join(build, pkg.name + '-' + pkg.version + '.zip'),
-				cmd = 'zip',
-				args = ['-ro', target, '.'],
-				options = { cwd: build },
-				proc = child_process.spawn(cmd, args, options);
-
-			Event.info({ method: 'exec', message: cmd + ' ' + args.join(' ') });
-
-			proc.stderr.on('data', function (data) {
-				process.stderr.write(data);
-			});
-			proc.on('exit', function (code) {
-				if (code) {
-					Event.error({ method: 'exec', message: cmd + ' exit code ' + code });
-					fail();
-				} else {
-					Event.ok({ method: 'exec', message: 'created zipball ' + target });
-					done();
-				}
-			});
-		});
+	});
 };
