@@ -1,11 +1,11 @@
 # jQuery.qrcode
 
-* Website with download, docs and demo: <http://larsjung.de/qrcode>
-* Sources: <http://github.com/lrsjng/jQuery.qrcode>
+* Website with download, docs and demo: <http://larsjung.de/qrcode/>
+* Sources: <https://github.com/lrsjng/jQuery.qrcode>
 
-jQuery.qrcode is provided under the terms of the [MIT License](http://github.com/lrsjng/jQuery.qrcode/blob/master/LICENSE.txt).
+jQuery.qrcode is provided under the terms of the [MIT License](https://github.com/lrsjng/jQuery.qrcode/blob/master/LICENSE.md).
 
-Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudos to [jquery.qrcode.js](http://github.com/jeromeetienne/jquery-qrcode) (MIT).
+Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudos to [jquery.qrcode.js](https://github.com/jeromeetienne/jquery-qrcode) (MIT).
 
 
 ## Changelog
@@ -13,7 +13,9 @@ Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudo
 
 ### develop branch
 
-* ...
+* some fixes
+* adds image support for fore- and background
+* updates build process
 
 
 ### v0.6.0 - *2013-07-28*
