@@ -3,7 +3,7 @@
 * Website with download, docs and demo: <http://larsjung.de/qrcode/>
 * Sources: <https://github.com/lrsjng/jQuery.qrcode>
 
-jQuery.qrcode is provided under the terms of the [MIT License](https://github.com/lrsjng/jQuery.qrcode/blob/master/LICENSE.md).
+jQuery.qrcode is provided under the terms of the [MIT License](https://github.com/lrsjng/jQuery.qrcode/blob/develop/LICENSE.md).
 
 Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudos to [jquery.qrcode.js](https://github.com/jeromeetienne/jquery-qrcode) (MIT).
 
