@@ -5,13 +5,13 @@
 
 jQuery.qrcode is provided under the terms of the [MIT License](https://github.com/lrsjng/jQuery.qrcode/blob/develop/LICENSE.md).
 
-Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudos to [jquery.qrcode.js](https://github.com/jeromeetienne/jquery-qrcode) (MIT).
+Uses [QR Code Generator](http://www.d-project.com/qrcode/index.html) (MIT). Kudos to [jquery.qrcode.js](https://github.com/jeromeetienne/jquery-qrcode).
 
 
 ## Changelog
 
 
-### develop branch
+### v0.7.0 - *2013-08-17*
 
 * some fixes
 * adds image support for fore- and background
