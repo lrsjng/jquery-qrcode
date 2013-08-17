@@ -11,6 +11,11 @@ Kudos to [jquery.qrcode.js](https://github.com/jeromeetienne/jquery-qrcode).
 ## Changelog
 
 
+### develop branch
+
+* ...
+
+
 ### v0.7.0 - *2013-08-17*
 
 * some fixes
