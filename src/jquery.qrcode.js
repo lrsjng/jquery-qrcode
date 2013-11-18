@@ -352,7 +352,7 @@
 					position: 'absolute',
 					padding: 0,
 					margin: 0,
-					width: moduleSize,
+//					width: moduleSize,
 					height: moduleSize,
 					'background-color': settings.fill
 				},
@@ -364,16 +364,25 @@
 			}
 
 			for (row = 0; row < moduleCount; row += 1) {
-				for (col = 0; col < moduleCount; col += 1) {
+				var left=0;
+        			for (col = 0; col < moduleCount+1; col += 1) {
 					if (qr.isDark(row, col)) {
-						$('<div/>')
-							.css(darkCSS)
-							.css({
-								left: offset + col * moduleSize,
-								top: offset + row * moduleSize
-							})
-							.appendTo($div);
-					}
+						//lets remember the left point on dark area
+            					if(!left)left=offset + col * moduleSize;
+					}else{ 
+            					//and when it's not dark area then we draw the dark div
+            					if(left){
+              						$('<div/>')
+								.css(darkCSS)
+								.css({
+									left: left,
+                  							width: offset + col * moduleSize - left,
+                  							top: offset + row * moduleSize
+							  	})
+								.appendTo($div);
+              						left=0;              
+            					}
+          				}
 				}
 			}
 
