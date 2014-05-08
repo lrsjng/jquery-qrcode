@@ -253,7 +253,7 @@
 		drawModules = function (qr, context, settings) {
 
 			var moduleCount = qr.moduleCount,
-				moduleSize = settings.size / moduleCount,
+				moduleSize = Math.round(settings.size / moduleCount),
 				fn = drawModuleDefault,
 				row, col;
 
