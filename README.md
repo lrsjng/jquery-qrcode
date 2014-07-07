@@ -11,6 +11,11 @@ Kudos to [jquery.qrcode.js](https://github.com/jeromeetienne/jquery-qrcode).
 ## Changelog
 
 
+### develop branch
+
+* ...
+
+
 ### v0.8.0 - *2014-07-07*
 
 * adds bower support
