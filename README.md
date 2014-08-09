@@ -2,7 +2,7 @@
 
 [![web][web-img]][web] [![GitHub][github-img]][github] [![bower][bower-img]][github]
 
-jQuery plugin to dynamically generate QR codes.
+jQuery plugin to dynamically generate QR codes. Uses [QR Code Generator][qrcode] (MIT).
 For bug reports and feature requests please use [issues][github-issues].
 
 
@@ -28,11 +28,6 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
-
-
-## References
-
-jQuery.qrcode uses [QR Code Generator][qrcode] (MIT).
 
 
 [web]: http://larsjung.de/qrcode/
