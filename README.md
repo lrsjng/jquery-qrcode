@@ -44,7 +44,7 @@ THE SOFTWARE.
 ## Changelog
 
 
-### v0.8.1 - *2014-08-09*
+### v0.9.0 - *2014-08-09*
 
 * maintenance
 
