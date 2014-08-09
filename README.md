@@ -43,7 +43,7 @@ jQuery.qrcode uses [QR Code Generator][qrcode] (MIT).
 [github-img]: http://img.shields.io/badge/GitHub-lrsjng/jquery.qrcode-a0a060.svg?style=flat
 [bower-img]: http://img.shields.io/badge/bower-jquery.qrcode-a0a060.svg?style=flat
 
-[qrcode]: http://www.d-project.com/qrcode/index.html
+[qrcode]: https://github.com/kazuhikoarase/qrcode-generator
 
 
 ## Changelog
