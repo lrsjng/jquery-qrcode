@@ -1,6 +1,6 @@
 {
   "name": "jquery.qrcode",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "generate QR codes dynamically",
   "homepage": "http://larsjung.de/qrcode/",
   "authors": [
