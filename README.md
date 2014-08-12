@@ -1,6 +1,6 @@
 # jQuery.qrcode
 
-[![web][web-img]][web] [![GitHub][github-img]][github] <!-- [![bower][bower-img]][bower] -->
+[![web][web-img]][web] [![GitHub][github-img]][github] [![bower][bower-img]][github]
 
 jQuery plugin to dynamically generate QR codes. Uses [QR Code Generator][qrcode] (MIT).
 For bug reports and feature requests please use [issues][github-issues].
@@ -32,11 +32,10 @@ THE SOFTWARE.
 
 [web]: http://larsjung.de/qrcode/
 [github]: https://github.com/lrsjng/jquery-qrcode
-[bower]: http://bower.io/search/?q=jquery-qrcode
 [github-issues]: https://github.com/lrsjng/jquery-qrcode/issues
 
 [web-img]: http://img.shields.io/badge/web-larsjung.de/qrcode-a0a060.svg?style=flat
 [github-img]: http://img.shields.io/badge/GitHub-lrsjng/jquery--qrcode-a0a060.svg?style=flat
-[bower-img]: http://img.shields.io/badge/bower-jquery--qrcode-a0a060.svg?style=flat
+[bower-img]: http://img.shields.io/badge/bower-lrsjng/jquery--qrcode-a0a060.svg?style=flat
 
 [qrcode]: https://github.com/kazuhikoarase/qrcode-generator
