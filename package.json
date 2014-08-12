@@ -1,7 +1,7 @@
 {
   "name": "jquery-qrcode",
   "displayName": "jQuery.qrcode",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "generate QR codes dynamically",
   "homepage": "http://larsjung.de/qrcode/",
   "bugs": "https://github.com/lrsjng/jquery-qrcode/issues",
