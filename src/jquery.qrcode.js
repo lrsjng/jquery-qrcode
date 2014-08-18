@@ -1,5 +1,3 @@
-/*! {{pkg.displayName}} {{pkg.version}} - //larsjung.de/qrcode (MIT) - uses //github.com/kazuhikoarase/qrcode-generator (MIT) */
-
 (function ($) {
 	'use strict';
 

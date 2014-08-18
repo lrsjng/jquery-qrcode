@@ -1,5 +1,4 @@
-/*! jQuery.qrcode 0.9.5 - //larsjung.de/qrcode (MIT) - uses //github.com/kazuhikoarase/qrcode-generator (MIT) */
-
+/* jQuery.qrcode 0.10.0 - http://larsjung.de/jquery-qrcode/ - uses //github.com/kazuhikoarase/qrcode-generator (MIT) */
 (function ($) {
 	'use strict';
 

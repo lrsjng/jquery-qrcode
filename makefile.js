@@ -16,7 +16,7 @@ module.exports = function (make) {
 		build = path.join(root, 'build');
 
 
-	make.version('>=0.10.0');
+	make.version('=0.11.0');
 	make.defaults('release');
 
 
@@ -57,16 +57,17 @@ module.exports = function (make) {
 
 	make.target('build', ['clean', 'lint'], 'build all files').sync(function () {
 
-		var env = {
-				pkg: pkg
-			};
+		var header = '/* ' + pkg.displayName + ' ' + pkg.version + ' - ' + pkg.homepage + ' - uses //github.com/kazuhikoarase/qrcode-generator (MIT) */\n';
+		var env = {pkg: pkg};
 
 		$(src + ': jquery.qrcode.js')
 			.includify()
 			.handlebars(env)
+			.wrap(header)
 			.WRITE($.map.p(src, dist))
 			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.js'))
 			.uglifyjs()
+			.wrap(header)
 			.WRITE($.map.p(src, dist).s('.js', '.min.js'))
 			.WRITE($.map.p(src, build).s('.js', '-' + pkg.version + '.min.js'));
 
