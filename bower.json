@@ -1,6 +1,6 @@
 {
   "name": "jquery-qrcode",
-  "version": "0.10.1",
+  "version": "0.11.0",
   "description": "generate QR codes dynamically",
   "homepage": "http://larsjung.de/jquery-qrcode/",
   "authors": [
@@ -13,14 +13,8 @@
     "url": "https://github.com/lrsjng/jquery-qrcode.git"
   },
   "ignore": [
-    "**/.*",
-    "bower_components",
-    "build",
-    "local",
-    "mkrfile.js",
-    "node_modules",
-    "src",
-    "test",
-    "tests"
+    "*",
+    "!dist/*",
+    "!*.md"
   ]
 }

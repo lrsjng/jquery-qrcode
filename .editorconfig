@@ -17,6 +17,11 @@ indent_style = space
 indent_size = 2
 
 
+[bower.json]
+indent_style = space
+indent_size = 2
+
+
 [.travis.yml]
 indent_style = space
 indent_size = 2
