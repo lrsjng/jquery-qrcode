@@ -1,9 +1,9 @@
 body {
-    font-family: Ubuntu;
+    font-family: 'Ubuntu', 'Arial', 'sans';
     margin: 0;
     padding: 0;
     text-align: center;
-    background: repeat url("back.png");
+    background: repeat url('back.png');
 }
 
 #banner {
@@ -56,12 +56,8 @@ hr {
 
 label {
     font-size: 10px;
-    color: #bbb;
+    color: #aaa;
     padding: 12px 4px 0 4px;
-}
-
-html.opera label[for="radius"] {
-    color: #e55;
 }
 
 #download {
@@ -78,7 +74,7 @@ html.opera label[for="radius"] {
 }
 
 input, textarea, select {
-    font-family: Ubuntu;
+    font-family: 'Ubuntu', 'Arial', 'sans';
     display: block;
     background-color: #fff;
     margin: 2px;
@@ -96,16 +92,15 @@ input, textarea, select {
     display: none;
 }
 
-
-
-input[type="range"] {
+input[type='range'] {
     -webkit-appearance: none;
     cursor: pointer;
 }
+
 input::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
     border-radius: 3px;
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #aaa) );
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #aaa));
 }

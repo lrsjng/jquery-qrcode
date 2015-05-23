@@ -2,101 +2,88 @@
 'use strict';
 
 var $ = jQuery;
+var guiValuePairs = [
+        ['size', 'px'],
+        ['minversion', ''],
+        ['quiet', ' modules'],
+        ['radius', '%'],
+        ['msize', '%'],
+        ['mposx', '%'],
+        ['mposy', '%']
+    ];
 
-var isOpera = Object.prototype.toString.call(window.opera) === '[object Opera]',
+function updateGui() {
 
-    guiValuePairs = [
-        ["size", "px"],
-        ["minversion", ""],
-        ["quiet", " modules"],
-        ["radius", "%"],
-        ["msize", "%"],
-        ["mposx", "%"],
-        ["mposy", "%"]
-    ],
+    $.each(guiValuePairs, function (idx, pair) {
 
-    updateGui = function () {
+        var $label = $('label[for="' + pair[0] + '"]');
+        $label.text($label.text().replace(/:.*/, ': ' + $('#' + pair[0]).val() + pair[1]));
+    });
+}
 
-        $.each(guiValuePairs, function (idx, pair) {
+function updateQrCode() {
 
-            var $label = $('label[for="' + pair[0] + '"]');
+    var options = {
+            render: $('#render').val(),
+            ecLevel: $('#eclevel').val(),
+            minVersion: parseInt($('#minversion').val(), 10),
 
-            $label.text($label.text().replace(/:.*/, ': ' + $('#' + pair[0]).val() + pair[1]));
-        });
-    },
+            fill: $('#fill').val(),
+            background: $('#background').val(),
+            // fill: $('#img-buffer')[0],
 
-    updateQrCode = function () {
+            text: $('#text').val(),
+            size: parseInt($('#size').val(), 10),
+            radius: parseInt($('#radius').val(), 10) * 0.01,
+            quiet: parseInt($('#quiet').val(), 10),
 
-        var options = {
-                render: $("#render").val(),
-                ecLevel: $("#eclevel").val(),
-                minVersion: parseInt($("#minversion").val(), 10),
+            mode: parseInt($('#mode').val(), 10),
 
-                fill: $("#fill").val(),
-                background: $("#background").val(),
-                // fill: $("#img-buffer")[0],
+            mSize: parseInt($('#msize').val(), 10) * 0.01,
+            mPosX: parseInt($('#mposx').val(), 10) * 0.01,
+            mPosY: parseInt($('#mposy').val(), 10) * 0.01,
 
-                text: $("#text").val(),
-                size: parseInt($("#size").val(), 10),
-                radius: parseInt($("#radius").val(), 10) * 0.01,
-                quiet: parseInt($("#quiet").val(), 10),
+            label: $('#label').val(),
+            fontname: $('#font').val(),
+            fontcolor: $('#fontcolor').val(),
 
-                mode: parseInt($("#mode").val(), 10),
+            image: $('#img-buffer')[0]
+        };
 
-                mSize: parseInt($("#msize").val(), 10) * 0.01,
-                mPosX: parseInt($("#mposx").val(), 10) * 0.01,
-                mPosY: parseInt($("#mposy").val(), 10) * 0.01,
+    $('#container').empty().qrcode(options);
+}
 
-                label: $("#label").val(),
-                fontname: $("#font").val(),
-                fontcolor: $("#fontcolor").val(),
+function update() {
 
-                image: $("#img-buffer")[0]
-            };
+    updateGui();
+    updateQrCode();
+}
 
-        $("#container").empty().qrcode(options);
-    },
+function onImageInput() {
 
-    update = function () {
+    var input = $('#image')[0];
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            $('#img-buffer').attr('src', event.target.result);
+            $('#mode').val('4');
+            setTimeout(update, 250);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 
-        updateGui();
-        updateQrCode();
-    },
+function download() {
 
-    onImageInput = function () {
-
-        var input = $("#image")[0];
-
-        if (input.files && input.files[0]) {
-
-            var reader = new FileReader();
-
-            reader.onload = function (event) {
-                $("#img-buffer").attr("src", event.target.result);
-                $("#mode").val("4");
-                setTimeout(update, 250);
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    },
-
-    download = function (event) {
-
-        var data = $("#container canvas")[0].toDataURL('image/png');
-        $("#download").attr("href", data);
-    };
+    $('#download').attr('href', $('#container canvas')[0].toDataURL('image/png'));
+}
 
 
 $(function () {
 
-    if (isOpera) {
-        $('html').addClass('opera');
-        $('#radius').prop('disabled', true);
-    }
-
-    $("#download").on("click", download);
-    $("#image").on('change', onImageInput);
-    $("input, textarea, select").on("input change", update);
+    $('#download').on('click', download);
+    $('#image').on('change', onImageInput);
+    $('input, textarea, select').on('input change', update);
     $(window).load(update);
     update();
 });
