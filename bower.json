@@ -1,5 +1,5 @@
 {
-  "name": "jquery-qrcode",
+  "name": "jquery.qrcode",
   "version": "0.12.0",
   "description": "generate QR codes dynamically",
   "homepage": "http://larsjung.de/jquery-qrcode/",
