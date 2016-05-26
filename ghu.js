@@ -15,7 +15,6 @@ ghu.before(runtime => {
     runtime.pkg = Object.assign({}, require('./package.json'));
     runtime.comment = `${runtime.pkg.name} v${runtime.pkg.version} - ${runtime.pkg.homepage}`;
     runtime.commentJs = `/*! ${runtime.comment} */\n`;
-    runtime.commentHtml = `<!-- ${runtime.comment} -->`;
 
     console.log(runtime.comment);
 });
@@ -41,7 +40,7 @@ ghu.task('build:demo', runtime => {
         read(`${SRC}/demo/*.jade`)
             .then(jade({pkg: runtime.pkg}))
             .then(write(mapfn.p(SRC, BUILD).s('.jade', ''), {overwrite: true})),
-        read(`${SRC}/demo/*, !*.jade`)
+        read(`${SRC}/demo/*, !**/*.jade`)
             .then(write(mapfn.p(SRC, BUILD), {overwrite: true}))
     ]);
 });
