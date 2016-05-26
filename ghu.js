@@ -1,7 +1,7 @@
 const {resolve, join} = require('path');
 const {ghu, includeit, jade, jszip, mapfn, read, remove, uglify, wrap, write} = require('ghu');
 
-const NAME = 'jquery.qrcode';
+const NAME = 'jquery-qrcode';
 
 const ROOT = resolve(__dirname);
 const SRC = join(ROOT, 'src');
