@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var $ = jQuery; // eslint-disable-line no-undef
+    var jq = window.jQuery;
     var guiValuePairs = [
         ['size', 'px'],
         ['minversion', ''],
@@ -13,41 +13,41 @@
     ];
 
     function updateGui() {
-        $.each(guiValuePairs, function (idx, pair) {
-            var $label = $('label[for="' + pair[0] + '"]');
-            $label.text($label.text().replace(/:.*/, ': ' + $('#' + pair[0]).val() + pair[1]));
+        jq.each(guiValuePairs, function (idx, pair) {
+            var $label = jq('label[for="' + pair[0] + '"]');
+            $label.text($label.text().replace(/:.*/, ': ' + jq('#' + pair[0]).val() + pair[1]));
         });
     }
 
     function updateQrCode() {
         var options = {
-            render: $('#render').val(),
-            ecLevel: $('#eclevel').val(),
-            minVersion: parseInt($('#minversion').val(), 10),
+            render: jq('#render').val(),
+            ecLevel: jq('#eclevel').val(),
+            minVersion: parseInt(jq('#minversion').val(), 10),
 
-            fill: $('#fill').val(),
-            background: $('#background').val(),
-            // fill: $('#img-buffer')[0],
+            fill: jq('#fill').val(),
+            background: jq('#background').val(),
+            // fill: jq('#img-buffer')[0],
 
-            text: $('#text').val(),
-            size: parseInt($('#size').val(), 10),
-            radius: parseInt($('#radius').val(), 10) * 0.01,
-            quiet: parseInt($('#quiet').val(), 10),
+            text: jq('#text').val(),
+            size: parseInt(jq('#size').val(), 10),
+            radius: parseInt(jq('#radius').val(), 10) * 0.01,
+            quiet: parseInt(jq('#quiet').val(), 10),
 
-            mode: parseInt($('#mode').val(), 10),
+            mode: parseInt(jq('#mode').val(), 10),
 
-            mSize: parseInt($('#msize').val(), 10) * 0.01,
-            mPosX: parseInt($('#mposx').val(), 10) * 0.01,
-            mPosY: parseInt($('#mposy').val(), 10) * 0.01,
+            mSize: parseInt(jq('#msize').val(), 10) * 0.01,
+            mPosX: parseInt(jq('#mposx').val(), 10) * 0.01,
+            mPosY: parseInt(jq('#mposy').val(), 10) * 0.01,
 
-            label: $('#label').val(),
-            fontname: $('#font').val(),
-            fontcolor: $('#fontcolor').val(),
+            label: jq('#label').val(),
+            fontname: jq('#font').val(),
+            fontcolor: jq('#fontcolor').val(),
 
-            image: $('#img-buffer')[0]
+            image: jq('#img-buffer')[0]
         };
 
-        $('#container').empty().qrcode(options);
+        jq('#container').empty().qrcode(options);
     }
 
     function update() {
@@ -56,12 +56,12 @@
     }
 
     function onImageInput() {
-        var input = $('#image')[0];
+        var input = jq('#image')[0];
         if (input.files && input.files[0]) {
             var reader = new FileReader();
             reader.onload = function (event) {
-                $('#img-buffer').attr('src', event.target.result);
-                $('#mode').val('4');
+                jq('#img-buffer').attr('src', event.target.result);
+                jq('#mode').val('4');
                 setTimeout(update, 250);
             };
             reader.readAsDataURL(input.files[0]);
@@ -69,15 +69,16 @@
     }
 
     function download() {
-        $('#download').attr('href', $('#container canvas')[0].toDataURL('image/png'));
+        jq('#download').attr('href', jq('#container canvas')[0].toDataURL('image/png'));
     }
 
-
-    $(function () {
-        $('#download').on('click', download);
-        $('#image').on('change', onImageInput);
-        $('input, textarea, select').on('input change', update);
-        $(window).load(update);
+    function init() {
+        jq('#download').on('click', download);
+        jq('#image').on('change', onImageInput);
+        jq('input, textarea, select').on('input change', update);
+        jq(window).load(update);
         update();
-    });
+    }
+
+    jq(init);
 }());
