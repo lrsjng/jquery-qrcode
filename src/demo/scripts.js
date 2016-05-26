@@ -1,8 +1,8 @@
 (function () {
-'use strict';
+    'use strict';
 
-var $ = jQuery;
-var guiValuePairs = [
+    var $ = jQuery; // eslint-disable-line no-undef
+    var guiValuePairs = [
         ['size', 'px'],
         ['minversion', ''],
         ['quiet', ' modules'],
@@ -12,18 +12,15 @@ var guiValuePairs = [
         ['mposy', '%']
     ];
 
-function updateGui() {
+    function updateGui() {
+        $.each(guiValuePairs, function (idx, pair) {
+            var $label = $('label[for="' + pair[0] + '"]');
+            $label.text($label.text().replace(/:.*/, ': ' + $('#' + pair[0]).val() + pair[1]));
+        });
+    }
 
-    $.each(guiValuePairs, function (idx, pair) {
-
-        var $label = $('label[for="' + pair[0] + '"]');
-        $label.text($label.text().replace(/:.*/, ': ' + $('#' + pair[0]).val() + pair[1]));
-    });
-}
-
-function updateQrCode() {
-
-    var options = {
+    function updateQrCode() {
+        var options = {
             render: $('#render').val(),
             ecLevel: $('#eclevel').val(),
             minVersion: parseInt($('#minversion').val(), 10),
@@ -50,42 +47,37 @@ function updateQrCode() {
             image: $('#img-buffer')[0]
         };
 
-    $('#container').empty().qrcode(options);
-}
-
-function update() {
-
-    updateGui();
-    updateQrCode();
-}
-
-function onImageInput() {
-
-    var input = $('#image')[0];
-    if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function (event) {
-            $('#img-buffer').attr('src', event.target.result);
-            $('#mode').val('4');
-            setTimeout(update, 250);
-        };
-        reader.readAsDataURL(input.files[0]);
+        $('#container').empty().qrcode(options);
     }
-}
 
-function download() {
+    function update() {
+        updateGui();
+        updateQrCode();
+    }
 
-    $('#download').attr('href', $('#container canvas')[0].toDataURL('image/png'));
-}
+    function onImageInput() {
+        var input = $('#image')[0];
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                $('#img-buffer').attr('src', event.target.result);
+                $('#mode').val('4');
+                setTimeout(update, 250);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function download() {
+        $('#download').attr('href', $('#container canvas')[0].toDataURL('image/png'));
+    }
 
 
-$(function () {
-
-    $('#download').on('click', download);
-    $('#image').on('change', onImageInput);
-    $('input, textarea, select').on('input change', update);
-    $(window).load(update);
-    update();
-});
-
+    $(function () {
+        $('#download').on('click', download);
+        $('#image').on('change', onImageInput);
+        $('input, textarea, select').on('input change', update);
+        $(window).load(update);
+        update();
+    });
 }());

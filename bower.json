@@ -1,10 +1,9 @@
 {
   "name": "jquery-qrcode",
-  "version": "0.12.0",
-  "description": "generate QR codes dynamically",
-  "homepage": "http://larsjung.de/jquery-qrcode/",
+  "description": "Generate QR codes dynamically.",
+  "homepage": "https://larsjung.de/jquery-qrcode/",
   "authors": [
-    "Lars Jung <lrsjng@gmail.com> (http://larsjung.de)"
+    "Lars Jung <lrsjng@gmail.com> (https://larsjung.de)"
   ],
   "main": "dist/jquery.qrcode.js",
   "license": "MIT",

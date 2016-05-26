@@ -12,24 +12,13 @@ insert_final_newline = true
 trim_trailing_whitespace = true
 
 
-[package.json]
-indent_style = space
+[{bower.json,package.json,.eslintrc,.babelrc,.travis.yml}]
 indent_size = 2
 
 
-[bower.json]
-indent_style = space
-indent_size = 2
-
-
-[.travis.yml]
-indent_style = space
-indent_size = 2
-
-
-[*.md]
+[{*.md,*.jade}]
 trim_trailing_whitespace = false
 
 
-[*.jade]
-trim_trailing_whitespace = false
+[*.svg]
+insert_final_newline = false

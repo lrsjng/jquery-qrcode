@@ -1,27 +1,26 @@
 {
   "name": "jquery-qrcode",
   "displayName": "jQuery.qrcode",
-  "version": "0.12.0",
-  "description": "generate QR codes dynamically",
-  "homepage": "http://larsjung.de/jquery-qrcode/",
+  "version": "0.13.0",
+  "description": "Generate QR codes dynamically.",
+  "homepage": "https://larsjung.de/jquery-qrcode/",
   "bugs": "https://github.com/lrsjng/jquery-qrcode/issues",
-  "author": "Lars Jung <lrsjng@gmail.com> (http://larsjung.de)",
+  "author": "Lars Jung <lrsjng@gmail.com> (https://larsjung.de)",
   "license": "MIT",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "node ghu.js release",
+    "precommit": "npm run -s lint && npm run -s build"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/lrsjng/jquery-qrcode.git"
   },
   "devDependencies": {
-    "fquery": "~0.16.4",
-    "fquery-includeit": "~0.3.0",
-    "fquery-jade": "~0.5.0",
-    "fquery-jshint": "~0.3.0",
-    "fquery-jszip": "~0.5.1",
-    "fquery-uglifyjs": "~0.3.0",
-    "mkr": "~0.8.5"
+    "eslint": "2.10.2",
+    "ghu": "0.4.0"
   },
   "engines": {
-    "node": ">=0.10",
-    "iojs": ">=1.0.0"
+    "node": ">=6.0.0"
   }
 }

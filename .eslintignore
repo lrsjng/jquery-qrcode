@@ -1,0 +1,5 @@
+**/build/**
+**/coverage/**
+**/dist/**
+**/vendor/**
+**/node_modules/**

@@ -8,7 +8,7 @@ jQuery plugin to dynamically generate QR codes. Uses [QR Code Generator][qrcode]
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2015 Lars Jung (http://larsjung.de)
+Copyright (c) 2016 Lars Jung (https://larsjung.de)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -29,7 +29,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
-[web]: http://larsjung.de/qrcode/
+[web]: https://larsjung.de/qrcode/
 [github]: https://github.com/lrsjng/jquery-qrcode
 
 [license-img]: https://img.shields.io/badge/license-MIT-a0a060.svg?style=flat-square
