@@ -5,7 +5,7 @@
   "authors": [
     "Lars Jung <lrsjng@gmail.com> (https://larsjung.de)"
   ],
-  "main": "dist/jquery.qrcode.js",
+  "main": "dist/jquery-qrcode.js",
   "license": "MIT",
   "repository": {
     "type": "git",
