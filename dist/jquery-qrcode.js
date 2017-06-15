@@ -10,6 +10,8 @@
         return !!(elem.getContext && elem.getContext('2d'));
     }());
 
+    var isColorFunctionRegExp = /rgba?\(.+\)/gi;
+
     // Wrapper for the original QR code generator.
     function createQRCode(text, level, version, quiet) {
         var qr = {};
@@ -123,7 +125,7 @@
     }
 
     function drawBackground(qr, context, settings) {
-        if (jq(settings.background).is('img')) {
+        if (!settings.background.match(isColorFunctionRegExp) && jq(settings.background).is('img')) {
             context.drawImage(settings.background, 0, 0, settings.size, settings.size);
         } else if (settings.background) {
             context.fillStyle = settings.background;
@@ -257,7 +259,7 @@
                 fn(qr, context, settings, l, t, w, row, col);
             }
         }
-        if (jq(settings.fill).is('img')) {
+        if (!settings.background.match(isColorFunctionRegExp) && jq(settings.fill).is('img')) {
             context.strokeStyle = 'rgba(0,0,0,0.5)';
             context.lineWidth = 2;
             context.stroke();
