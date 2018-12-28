@@ -123,7 +123,7 @@
     }
 
     function drawBackground(qr, context, settings) {
-        if (jq(settings.background).is('img')) {
+        if (settings.background && settings.background.tagName === 'IMG') {
             context.drawImage(settings.background, 0, 0, settings.size, settings.size);
         } else if (settings.background) {
             context.fillStyle = settings.background;
@@ -257,7 +257,7 @@
                 fn(qr, context, settings, l, t, w, row, col);
             }
         }
-        if (jq(settings.fill).is('img')) {
+        if (settings.fill && settings.fill.tagName === 'IMG') {
             context.strokeStyle = 'rgba(0,0,0,0.5)';
             context.lineWidth = 2;
             context.stroke();
