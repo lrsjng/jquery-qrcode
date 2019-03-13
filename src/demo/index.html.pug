@@ -3,22 +3,22 @@ html(lang='en')
     head
         meta(charset='utf-8')
         meta(http-equiv='x-ua-compatible', content='ie=edge')
-        title #{pkg.displayName} #{pkg.version} · Demo
-        meta(name='description', content='demo for #{pkg.displayName} (#{pkg.homepage})')
+        title #{pkg.title} #{pkg.version} · Demo
+        meta(name='description', content=`demo for ${pkg.title} (${pkg.homepage})`)
         meta(name='viewport', content='width=device-width, initial-scale=1')
         link(rel='shortcut icon', type='image/png', href='dummy.png')
         link(rel='apple-touch-icon-precomposed', type='image/png', href='dummy.png')
         link(href='//fonts.googleapis.com/css?family=Ubuntu:300,400,700', rel='stylesheet')
         link(href='styles.css', rel='stylesheet')
         script(src='jquery.min.js')
-        script(src='../jquery-qrcode-#{pkg.version}.js')
+        script(src=`../jquery-qrcode-${pkg.version}.js`)
         script(src='scripts.js')
 
     body
         div#container
 
         div.control.left
-            a#banner(href='#{pkg.homepage}') #{pkg.displayName} #{pkg.version}
+            a#banner(href=pkg.homepage) #{pkg.title} #{pkg.version}
 
             hr
             label(for='render') RENDER MODE
@@ -70,7 +70,7 @@ html(lang='en')
 
             hr
             label(for='label') LABEL
-            input#label(type='text', value='#{pkg.displayName}')
+            input#label(type='text', value=pkg.title)
             label(for='font') FONT NAME
             input#font(type='text', value='Ubuntu')
             label(for='fontcolor') FONT COLOR

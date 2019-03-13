@@ -1,5 +1,5 @@
-**/build/**
-**/coverage/**
-**/dist/**
-**/vendor/**
-**/node_modules/**
+/build/
+/coverage/
+/dist/
+/vendor/
+/node_modules/

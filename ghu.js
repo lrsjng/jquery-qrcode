@@ -1,5 +1,5 @@
 const {resolve, join} = require('path');
-const {ghu, includeit, jade, jszip, mapfn, read, remove, uglify, wrap, write} = require('ghu');
+const {ghu, includeit, pug, jszip, mapfn, read, remove, uglify, wrap, write} = require('ghu');
 
 const NAME = 'jquery-qrcode';
 
@@ -37,11 +37,14 @@ ghu.task('build:scripts', runtime => {
 
 ghu.task('build:demo', runtime => {
     return Promise.all([
-        read(`${SRC}/demo/*.jade`)
-            .then(jade({pkg: runtime.pkg}))
-            .then(write(mapfn.p(SRC, BUILD).s('.jade', ''), {overwrite: true})),
-        read(`${SRC}/demo/*, !**/*.jade`)
-            .then(write(mapfn.p(SRC, BUILD), {overwrite: true}))
+        read(`${SRC}/demo/*.pug`)
+            .then(pug({pkg: runtime.pkg}))
+            .then(write(mapfn.p(SRC, BUILD).s('.pug', ''), {overwrite: true})),
+        read(`${SRC}/demo/*, !**/*.pug`)
+            .then(write(mapfn.p(SRC, BUILD), {overwrite: true})),
+
+        read(`${ROOT}/node_modules/jquery/dist/jquery.min.js`)
+            .then(write(`${BUILD}/demo/jquery.min.js`, {overwrite: true}))
     ]);
 });
 
@@ -50,7 +53,7 @@ ghu.task('build:copy', () => {
         read(`${VENDOR}/demo/*`)
             .then(write(mapfn.p(VENDOR, BUILD), {overwrite: true})),
         read(`${ROOT}/*.md`)
-                .then(write(mapfn.p(ROOT, BUILD), {overwrite: true}))
+            .then(write(mapfn.p(ROOT, BUILD), {overwrite: true}))
     ]);
 });
 

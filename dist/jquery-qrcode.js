@@ -1,4 +1,4 @@
-/*! jquery-qrcode v0.14.0 - https://larsjung.de/jquery-qrcode/ */
+/*! jquery-qrcode v0.15.0 - https://larsjung.de/jquery-qrcode/ */
 (function (vendor_qrcode) {
     'use strict';
 

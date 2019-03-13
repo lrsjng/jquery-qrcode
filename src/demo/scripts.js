@@ -76,7 +76,7 @@
         jq('#download').on('click', download);
         jq('#image').on('change', onImageInput);
         jq('input, textarea, select').on('input change', update);
-        jq(window).load(update);
+        jq(window).on('load', update);
         update();
     }
 
