@@ -5,30 +5,6 @@
     es6: true
     node: true
 
-  ecmaFeatures:
-    arrowFunctions: true
-    binaryLiterals: true
-    blockBindings: true
-    classes: false
-    defaultParams: true
-    destructuring: true
-    forOf: true
-    generators: true
-    globalReturn: true
-    jsx: false
-    modules: true
-    objectLiteralComputedProperties: true
-    objectLiteralDuplicateProperties: true
-    objectLiteralShorthandMethods: true
-    objectLiteralShorthandProperties: true
-    octalLiterals: true
-    regexUFlag: true
-    regexYFlag: true
-    spread: true
-    superInFunctions: false
-    templateStrings: true
-    unicodeCodePointEscapes: true
-
   rules:
     array-bracket-spacing: [2, never]
     arrow-parens: [2, as-needed]
@@ -62,7 +38,7 @@
     max-depth: [1, 4]
     max-len: [0, 80, 4]
     max-nested-callbacks: [1, 3]
-    max-params: [1, 5] ###
+    max-params: [1, 16] ###
     max-statements: [1, 32] ###
     new-cap: 0
     new-parens: 2

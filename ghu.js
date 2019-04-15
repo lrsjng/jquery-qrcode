@@ -1,11 +1,10 @@
 const {resolve, join} = require('path');
-const {ghu, includeit, pug, jszip, mapfn, read, remove, uglify, wrap, write} = require('ghu');
+const {ghu, includeit, pug, jszip, mapfn, read, remove, webpack, uglify, wrap, write} = require('ghu');
 
 const NAME = 'jquery-qrcode';
 
 const ROOT = resolve(__dirname);
 const SRC = join(ROOT, 'src');
-const VENDOR = join(ROOT, 'vendor');
 const BUILD = join(ROOT, 'build');
 const DIST = join(ROOT, 'dist');
 
@@ -25,11 +24,12 @@ ghu.task('clean', 'delete build folder', () => {
 
 ghu.task('build:scripts', runtime => {
     return read(`${SRC}/${NAME}.js`)
+        .then(webpack(webpack.cfg_umd(NAME, [SRC]), {showStats: false}))
         .then(includeit())
         .then(wrap(runtime.commentJs))
         .then(write(`${DIST}/${NAME}.js`, {overwrite: true}))
         .then(write(`${BUILD}/${NAME}-${runtime.pkg.version}.js`, {overwrite: true}))
-        .then(uglify({compressor: {warnings: false}}))
+        .then(uglify())
         .then(wrap(runtime.commentJs))
         .then(write(`${DIST}/${NAME}.min.js`, {overwrite: true}))
         .then(write(`${BUILD}/${NAME}-${runtime.pkg.version}.min.js`, {overwrite: true}));
@@ -40,7 +40,12 @@ ghu.task('build:demo', runtime => {
         read(`${SRC}/demo/*.pug`)
             .then(pug({pkg: runtime.pkg}))
             .then(write(mapfn.p(SRC, BUILD).s('.pug', ''), {overwrite: true})),
-        read(`${SRC}/demo/*, !**/*.pug`)
+        read(`${SRC}/demo/*.js`)
+            .then(webpack(webpack.cfg([SRC]), {showStats: false}))
+            .then(uglify())
+            .then(wrap(runtime.commentJs))
+            .then(write(mapfn.p(SRC, BUILD), {overwrite: true})),
+        read(`${SRC}/demo/*, !**/*.pug, !**/*.js`)
             .then(write(mapfn.p(SRC, BUILD), {overwrite: true})),
 
         read(`${ROOT}/node_modules/jquery/dist/jquery.min.js`)
@@ -50,8 +55,6 @@ ghu.task('build:demo', runtime => {
 
 ghu.task('build:copy', () => {
     return Promise.all([
-        read(`${VENDOR}/demo/*`)
-            .then(write(mapfn.p(VENDOR, BUILD), {overwrite: true})),
         read(`${ROOT}/*.md`)
             .then(write(mapfn.p(ROOT, BUILD), {overwrite: true}))
     ]);

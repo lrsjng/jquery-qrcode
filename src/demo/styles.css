@@ -1,5 +1,5 @@
 body {
-    font-family: 'Ubuntu', 'Arial', 'sans';
+    font-family: 'Ubuntu', 'sans';
     margin: 0;
     padding: 0;
     text-align: center;
@@ -74,7 +74,7 @@ label {
 }
 
 input, textarea, select {
-    font-family: 'Ubuntu', 'Arial', 'sans';
+    font-family: 'Ubuntu', 'sans';
     display: block;
     background-color: #fff;
     margin: 2px;

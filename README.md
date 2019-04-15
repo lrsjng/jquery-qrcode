@@ -3,6 +3,8 @@
 [![license][license-img]][github] [![web][web-img]][web] [![github][github-img]][github]
 
 jQuery plugin to dynamically generate QR codes. Uses [QR Code Generator][qrcode] (MIT).
+There is a jQuery-free lib named [kjua][kjua] that works in all modern browsers
+with crisp codes on all devices.
 
 
 ## License
@@ -33,7 +35,8 @@ THE SOFTWARE.
 [github]: https://github.com/lrsjng/jquery-qrcode
 
 [license-img]: https://img.shields.io/badge/license-MIT-a0a060.svg?style=flat-square
-[web-img]: https://img.shields.io/badge/web-larsjung.de/qrcode-a0a060.svg?style=flat-square
+[web-img]: https://img.shields.io/badge/web-larsjung.de/jquery--qrcode-a0a060.svg?style=flat-square
 [github-img]: https://img.shields.io/badge/github-lrsjng/jquery--qrcode-a0a060.svg?style=flat-square
 
 [qrcode]: https://github.com/kazuhikoarase/qrcode-generator
+[kjua]: https://larsjung.de/kjua/
