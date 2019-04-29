@@ -1,5 +1,6 @@
 const {resolve, join} = require('path');
-const {ghu, includeit, pug, jszip, mapfn, read, remove, webpack, uglify, wrap, write} = require('ghu');
+const {ghu, pug, jszip, mapfn, read, remove, webpack, uglify, wrap, write} = require('ghu');
+const overwrite = arg => write(arg, {overwrite: true});
 
 const NAME = 'jquery-qrcode';
 
@@ -14,58 +15,52 @@ ghu.before(runtime => {
     runtime.pkg = Object.assign({}, require('./package.json'));
     runtime.comment = `${runtime.pkg.name} v${runtime.pkg.version} - ${runtime.pkg.homepage}`;
     runtime.commentJs = `/*! ${runtime.comment} */\n`;
-
     console.log(runtime.comment);
 });
 
-ghu.task('clean', 'delete build folder', () => {
+ghu.task('clean', () => {
     return remove(`${BUILD}, ${DIST}`);
 });
 
 ghu.task('build:scripts', runtime => {
     return read(`${SRC}/${NAME}.js`)
-        .then(webpack(webpack.cfg_umd(NAME, [SRC]), {showStats: false}))
-        .then(includeit())
+        .then(webpack(webpack.cfg_umd(NAME, [SRC])))
         .then(wrap(runtime.commentJs))
-        .then(write(`${DIST}/${NAME}.js`, {overwrite: true}))
-        .then(write(`${BUILD}/${NAME}-${runtime.pkg.version}.js`, {overwrite: true}))
+        .then(overwrite(`${DIST}/${NAME}.js`))
+        .then(overwrite(`${BUILD}/${NAME}-${runtime.pkg.version}.js`))
         .then(uglify())
         .then(wrap(runtime.commentJs))
-        .then(write(`${DIST}/${NAME}.min.js`, {overwrite: true}))
-        .then(write(`${BUILD}/${NAME}-${runtime.pkg.version}.min.js`, {overwrite: true}));
+        .then(overwrite(`${DIST}/${NAME}.min.js`))
+        .then(overwrite(`${BUILD}/${NAME}-${runtime.pkg.version}.min.js`));
 });
 
-ghu.task('build:demo', runtime => {
-    return Promise.all([
-        read(`${SRC}/demo/*.pug`)
-            .then(pug({pkg: runtime.pkg}))
-            .then(write(mapfn.p(SRC, BUILD).s('.pug', ''), {overwrite: true})),
-        read(`${SRC}/demo/*.js`)
-            .then(webpack(webpack.cfg([SRC]), {showStats: false}))
-            .then(uglify())
-            .then(wrap(runtime.commentJs))
-            .then(write(mapfn.p(SRC, BUILD), {overwrite: true})),
-        read(`${SRC}/demo/*, !**/*.pug, !**/*.js`)
-            .then(write(mapfn.p(SRC, BUILD), {overwrite: true})),
-
-        read(`${ROOT}/node_modules/jquery/dist/jquery.min.js`)
-            .then(write(`${BUILD}/demo/jquery.min.js`, {overwrite: true}))
-    ]);
-});
-
-ghu.task('build:copy', () => {
+ghu.task('build:other', runtime => {
     return Promise.all([
         read(`${ROOT}/*.md`)
-            .then(write(mapfn.p(ROOT, BUILD), {overwrite: true}))
+            .then(overwrite(mapfn.p(ROOT, BUILD))),
+
+        read(`${SRC}/demo/*.pug`)
+            .then(pug({pkg: runtime.pkg}))
+            .then(overwrite(mapfn.p(SRC, BUILD).s('.pug', ''))),
+        read(`${SRC}/demo/*.js`)
+            .then(webpack(webpack.cfg([SRC])))
+            .then(uglify())
+            .then(wrap(runtime.commentJs))
+            .then(overwrite(mapfn.p(SRC, BUILD))),
+        read(`${SRC}/demo/*, !**/*.pug, !**/*.js`)
+            .then(overwrite(mapfn.p(SRC, BUILD))),
+
+        read(`${ROOT}/node_modules/jquery/dist/jquery.min.js`)
+            .then(overwrite(`${BUILD}/demo/jquery.min.js`))
     ]);
 });
 
-ghu.task('build', ['build:scripts', 'build:demo', 'build:copy']);
+ghu.task('build', ['build:scripts', 'build:other']);
 
 ghu.task('zip', ['build'], runtime => {
     return read(`${BUILD}/**/*`)
         .then(jszip({dir: BUILD, level: 9}))
-        .then(write(`${BUILD}/${NAME}-${runtime.pkg.version}.zip`, {overwrite: true}));
+        .then(overwrite(`${BUILD}/${NAME}-${runtime.pkg.version}.zip`));
 });
 
 ghu.task('release', ['clean', 'zip']);

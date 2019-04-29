@@ -1,6 +1,4 @@
-const VQRCODE = require('./vqrcode');
-
-const WIN = window; // eslint-disable-line no-undef
+const WIN = global.window;
 const JQ = WIN.jQuery;
 
 // Check if canvas is available in the browser (as Modernizr does)
@@ -15,7 +13,9 @@ const is_img_el = x => x && typeof x.tagName === 'string' && x.tagName.toUpperCa
 const create_qrcode = (text, level, version, quiet) => {
     const qr = {};
 
-    const vqr = VQRCODE(version, level);
+    const qr_gen = require('qrcode-generator');
+    qr_gen.stringToBytes = qr_gen.stringToBytesFuncs['UTF-8'];
+    const vqr = qr_gen(version, level);
     vqr.addData(text);
     vqr.make();
 

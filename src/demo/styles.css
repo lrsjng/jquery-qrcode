@@ -60,19 +60,6 @@ label {
     padding: 12px 4px 0 4px;
 }
 
-#download {
-    text-align: center;
-    font-weight: bold;
-    text-decoration: none;
-    display: block;
-    color: #555;
-    background-color: #ddd;
-    margin: 4px;
-    padding: 8px 0;
-    border: 1px solid #ddd;
-    cursor: pointer;
-}
-
 input, textarea, select {
     font-family: 'Ubuntu', 'sans';
     display: block;

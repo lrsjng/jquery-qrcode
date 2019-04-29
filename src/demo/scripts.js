@@ -1,4 +1,4 @@
-const WIN = window; // eslint-disable-line no-undef
+const WIN = global.window;
 const JQ = WIN.jQuery;
 
 const GUI_VALUE_PAIRS = [
@@ -71,12 +71,7 @@ const on_img_input = () => {
     }
 };
 
-const download = () => {
-    JQ('#download').attr('href', JQ('#container canvas')[0].toDataURL('image/png'));
-};
-
 const init = () => {
-    JQ('#download').on('click', download);
     JQ('#image').on('change', on_img_input);
     JQ('input, textarea, select').on('input change', update);
     JQ(WIN).on('load', update);
