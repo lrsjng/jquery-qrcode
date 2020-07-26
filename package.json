@@ -1,10 +1,9 @@
 {
   "name": "jquery-qrcode",
   "title": "jQuery.qrcode",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "description": "Generate QR codes dynamically.",
   "homepage": "https://larsjung.de/jquery-qrcode/",
-  "bugs": "https://github.com/lrsjng/jquery-qrcode/issues",
   "author": "Lars Jung <lrsjng@gmail.com> (https://larsjung.de)",
   "license": "MIT",
   "scripts": {
@@ -17,14 +16,11 @@
     "url": "https://github.com/lrsjng/jquery-qrcode.git"
   },
   "devDependencies": {
-    "@babel/core": "7.4.4",
-    "@babel/preset-env": "7.4.4",
-    "eslint": "5.16.0",
-    "ghu": "0.20.0",
-    "jquery": "3.4.0",
-    "qrcode-generator": "1.4.3"
-  },
-  "engines": {
-    "node": ">=8.0.0"
+    "@babel/core": "7.10.5",
+    "@babel/preset-env": "7.10.4",
+    "eslint": "7.5.0",
+    "ghu": "0.26.0",
+    "jquery": "3.5.1",
+    "qrcode-generator": "1.4.4"
   }
 }

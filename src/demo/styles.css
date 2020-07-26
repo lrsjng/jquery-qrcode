@@ -1,7 +1,10 @@
-body {
-    font-family: 'Ubuntu', 'sans';
+* {
     margin: 0;
     padding: 0;
+}
+
+body {
+    font-family: 'Ubuntu Mono', 'monospace';
     text-align: center;
     background: repeat url('back.png');
 }
@@ -22,6 +25,7 @@ body {
     display: inline-block;
     margin: 20px auto;
     box-shadow: 0 0 16px rgba(0,0,0,0.5);
+    -webkit-print-color-adjust: exact;
 }
 
 #container > * {
@@ -55,13 +59,14 @@ hr {
 }
 
 label {
-    font-size: 10px;
-    color: #aaa;
-    padding: 12px 4px 0 4px;
+    display: block;
+    font-size: 12px;
+    color: #555;
+    padding: 12px 4px 4px 4px;
 }
 
 input, textarea, select {
-    font-family: 'Ubuntu', 'sans';
+    font-family: 'Ubuntu Mono', 'monospace';
     display: block;
     background-color: #fff;
     margin: 2px;
@@ -90,4 +95,14 @@ input::-webkit-slider-thumb {
     height: 16px;
     border-radius: 3px;
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #aaa), color-stop(1, #aaa));
+}
+
+@media print {
+    #container {
+        box-shadow: none;
+    }
+
+    .control {
+        display: none;
+    }
 }

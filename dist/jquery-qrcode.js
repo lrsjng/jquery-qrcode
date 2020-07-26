@@ -1,4 +1,4 @@
-/*! jquery-qrcode v0.17.0 - https://larsjung.de/jquery-qrcode/ */
+/*! jquery-qrcode v0.18.0 - https://larsjung.de/jquery-qrcode/ */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -99,13 +99,9 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global) {var WIN = global.window;
-var JQ = WIN.jQuery; // Check if canvas is available in the browser (as Modernizr does)
+var WIN = window; // eslint-disable-line
 
-var HAS_CANVAS = function () {
-  var el = WIN.document.createElement('canvas');
-  return !!(el.getContext && el.getContext('2d'));
-}();
+var JQ = WIN.jQuery;
 
 var is_img_el = function is_img_el(x) {
   return x && typeof x.tagName === 'string' && x.tagName.toUpperCase() === 'IMG';
@@ -115,7 +111,7 @@ var is_img_el = function is_img_el(x) {
 var create_qrcode = function create_qrcode(text, level, version, quiet) {
   var qr = {};
 
-  var qr_gen = __webpack_require__(2);
+  var qr_gen = __webpack_require__(1);
 
   qr_gen.stringToBytes = qr_gen.stringToBytesFuncs['UTF-8'];
   var vqr = qr_gen(version, level);
@@ -170,12 +166,12 @@ var create_min_qrcode = function create_min_qrcode(text, level, min_ver, max_ver
   return undefined;
 };
 
-var draw_background_label = function draw_background_label(qr, context, settings) {
+var draw_background_label = function draw_background_label(qr, ctx, settings) {
   var size = settings.size;
   var font = 'bold ' + settings.mSize * size + 'px ' + settings.fontname;
-  var ctx = JQ('<canvas/>')[0].getContext('2d');
-  ctx.font = font;
-  var w = ctx.measureText(settings.label).width;
+  var tmp_ctx = JQ('<canvas/>')[0].getContext('2d');
+  tmp_ctx.font = font;
+  var w = tmp_ctx.measureText(settings.label).width;
   var sh = settings.mSize;
   var sw = w / size;
   var sl = (1 - sw) * settings.mPosX;
@@ -192,12 +188,12 @@ var draw_background_label = function draw_background_label(qr, context, settings
     qr.add_blank(sl - pad, st - pad, sr + pad, sb + pad);
   }
 
-  context.fillStyle = settings.fontcolor;
-  context.font = font;
-  context.fillText(settings.label, sl * size, st * size + 0.75 * settings.mSize * size);
+  ctx.fillStyle = settings.fontcolor;
+  ctx.font = font;
+  ctx.fillText(settings.label, sl * size, st * size + 0.75 * settings.mSize * size);
 };
 
-var draw_background_img = function draw_background_img(qr, context, settings) {
+var draw_background_img = function draw_background_img(qr, ctx, settings) {
   var size = settings.size;
   var w = settings.image.naturalWidth || 1;
   var h = settings.image.naturalHeight || 1;
@@ -217,160 +213,160 @@ var draw_background_img = function draw_background_img(qr, context, settings) {
     qr.add_blank(sl - pad, st - pad, sr + pad, sb + pad);
   }
 
-  context.drawImage(settings.image, sl * size, st * size, sw * size, sh * size);
+  ctx.drawImage(settings.image, sl * size, st * size, sw * size, sh * size);
 };
 
-var draw_background = function draw_background(qr, context, settings) {
+var draw_background = function draw_background(qr, ctx, settings) {
   if (is_img_el(settings.background)) {
-    context.drawImage(settings.background, 0, 0, settings.size, settings.size);
+    ctx.drawImage(settings.background, 0, 0, settings.size, settings.size);
   } else if (settings.background) {
-    context.fillStyle = settings.background;
-    context.fillRect(settings.left, settings.top, settings.size, settings.size);
+    ctx.fillStyle = settings.background;
+    ctx.fillRect(settings.left, settings.top, settings.size, settings.size);
   }
 
   var mode = settings.mode;
 
   if (mode === 1 || mode === 2) {
-    draw_background_label(qr, context, settings);
+    draw_background_label(qr, ctx, settings);
   } else if (is_img_el(settings.image) && (mode === 3 || mode === 4)) {
-    draw_background_img(qr, context, settings);
+    draw_background_img(qr, ctx, settings);
   }
 };
 
-var draw_modules_default = function draw_modules_default(qr, context, settings, left, top, width, row, col) {
+var draw_modules_default = function draw_modules_default(qr, ctx, settings, left, top, width, row, col) {
   if (qr.is_dark(row, col)) {
-    context.rect(left, top, width, width);
+    ctx.r(left, top, width, width);
   }
 };
 
 var draw_modules_rounded_dark = function draw_modules_rounded_dark(ctx, l, t, r, b, rad, nw, ne, se, sw) {
   if (nw) {
-    ctx.moveTo(l + rad, t);
+    ctx.m(l + rad, t);
   } else {
-    ctx.moveTo(l, t);
+    ctx.m(l, t);
   }
 
   if (ne) {
-    ctx.lineTo(r - rad, t);
-    ctx.arcTo(r, t, r, b, rad);
+    ctx.l(r - rad, t).a(r, t, r, b, rad);
   } else {
-    ctx.lineTo(r, t);
+    ctx.l(r, t);
   }
 
   if (se) {
-    ctx.lineTo(r, b - rad);
-    ctx.arcTo(r, b, l, b, rad);
+    ctx.l(r, b - rad).a(r, b, l, b, rad);
   } else {
-    ctx.lineTo(r, b);
+    ctx.l(r, b);
   }
 
   if (sw) {
-    ctx.lineTo(l + rad, b);
-    ctx.arcTo(l, b, l, t, rad);
+    ctx.l(l + rad, b).a(l, b, l, t, rad);
   } else {
-    ctx.lineTo(l, b);
+    ctx.l(l, b);
   }
 
   if (nw) {
-    ctx.lineTo(l, t + rad);
-    ctx.arcTo(l, t, r, t, rad);
+    ctx.l(l, t + rad).a(l, t, r, t, rad);
   } else {
-    ctx.lineTo(l, t);
+    ctx.l(l, t);
   }
 };
 
 var draw_modules_rounded_light = function draw_modules_rounded_light(ctx, l, t, r, b, rad, nw, ne, se, sw) {
   if (nw) {
-    ctx.moveTo(l + rad, t);
-    ctx.lineTo(l, t);
-    ctx.lineTo(l, t + rad);
-    ctx.arcTo(l, t, l + rad, t, rad);
+    ctx.m(l + rad, t).l(l, t).l(l, t + rad).a(l, t, l + rad, t, rad);
   }
 
   if (ne) {
-    ctx.moveTo(r - rad, t);
-    ctx.lineTo(r, t);
-    ctx.lineTo(r, t + rad);
-    ctx.arcTo(r, t, r - rad, t, rad);
+    ctx.m(r - rad, t).l(r, t).l(r, t + rad).a(r, t, r - rad, t, rad);
   }
 
   if (se) {
-    ctx.moveTo(r - rad, b);
-    ctx.lineTo(r, b);
-    ctx.lineTo(r, b - rad);
-    ctx.arcTo(r, b, r - rad, b, rad);
+    ctx.m(r - rad, b).l(r, b).l(r, b - rad).a(r, b, r - rad, b, rad);
   }
 
   if (sw) {
-    ctx.moveTo(l + rad, b);
-    ctx.lineTo(l, b);
-    ctx.lineTo(l, b - rad);
-    ctx.arcTo(l, b, l + rad, b, rad);
+    ctx.m(l + rad, b).l(l, b).l(l, b - rad).a(l, b, l + rad, b, rad);
   }
 };
 
-var draw_modules_rounded = function draw_modules_rounded(qr, context, settings, left, top, width, row, col) {
-  var is_dark = qr.is_dark;
+var draw_modules_rounded = function draw_modules_rounded(qr, ctx, settings, left, top, width, row, col) {
   var right = left + width;
   var bottom = top + width;
-  var radius = settings.radius * width;
-  var rowT = row - 1;
-  var rowB = row + 1;
-  var colL = col - 1;
-  var colR = col + 1;
-  var center = is_dark(row, col);
-  var northwest = is_dark(rowT, colL);
-  var north = is_dark(rowT, col);
-  var northeast = is_dark(rowT, colR);
-  var east = is_dark(row, colR);
-  var southeast = is_dark(rowB, colR);
-  var south = is_dark(rowB, col);
-  var southwest = is_dark(rowB, colL);
-  var west = is_dark(row, colL);
+  var rad = settings.radius * width;
+  var row_n = row - 1;
+  var row_s = row + 1;
+  var col_w = col - 1;
+  var col_e = col + 1;
+  var is_dark = qr.is_dark;
+  var d_center = is_dark(row, col);
+  var d_nw = is_dark(row_n, col_w);
+  var d_n = is_dark(row_n, col);
+  var d_ne = is_dark(row_n, col_e);
+  var d_e = is_dark(row, col_e);
+  var d_se = is_dark(row_s, col_e);
+  var d_s = is_dark(row_s, col);
+  var d_sw = is_dark(row_s, col_w);
+  var d_w = is_dark(row, col_w);
 
-  if (center) {
-    draw_modules_rounded_dark(context, left, top, right, bottom, radius, !north && !west, !north && !east, !south && !east, !south && !west);
+  if (d_center) {
+    draw_modules_rounded_dark(ctx, left, top, right, bottom, rad, !d_n && !d_w, !d_n && !d_e, !d_s && !d_e, !d_s && !d_w);
   } else {
-    draw_modules_rounded_light(context, left, top, right, bottom, radius, north && west && northwest, north && east && northeast, south && east && southeast, south && west && southwest);
+    draw_modules_rounded_light(ctx, left, top, right, bottom, rad, d_n && d_w && d_nw, d_n && d_e && d_ne, d_s && d_e && d_se, d_s && d_w && d_sw);
   }
 };
 
-var draw_modules = function draw_modules(qr, context, settings) {
+var draw_modules = function draw_modules(qr, ctx, settings) {
   var module_count = qr.module_count;
   var module_size = settings.size / module_count;
   var fn = draw_modules_default;
-  var row;
-  var col;
 
   if (settings.radius > 0 && settings.radius <= 0.5) {
     fn = draw_modules_rounded;
   }
 
-  context.beginPath();
+  var draw_ctx = {
+    m: function m(x, y) {
+      ctx.moveTo(x, y);
+      return draw_ctx;
+    },
+    l: function l(x, y) {
+      ctx.lineTo(x, y);
+      return draw_ctx;
+    },
+    a: function a() {
+      ctx.arcTo.apply(ctx, arguments);
+      return draw_ctx;
+    },
+    r: function r() {
+      ctx.rect.apply(ctx, arguments);
+      return draw_ctx;
+    }
+  };
+  ctx.beginPath();
 
-  for (row = 0; row < module_count; row += 1) {
-    for (col = 0; col < module_count; col += 1) {
+  for (var row = 0; row < module_count; row += 1) {
+    for (var col = 0; col < module_count; col += 1) {
       var l = settings.left + col * module_size;
       var t = settings.top + row * module_size;
       var w = module_size;
-      fn(qr, context, settings, l, t, w, row, col);
+      fn(qr, draw_ctx, settings, l, t, w, row, col);
     }
   }
 
   if (is_img_el(settings.fill)) {
-    context.strokeStyle = 'rgba(0,0,0,0.5)';
-    context.lineWidth = 2;
-    context.stroke();
-    var prev = context.globalCompositeOperation;
-    context.globalCompositeOperation = 'destination-out';
-    context.fill();
-    context.globalCompositeOperation = prev;
-    context.clip();
-    context.drawImage(settings.fill, 0, 0, settings.size, settings.size);
-    context.restore();
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    var prev = ctx.globalCompositeOperation;
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fill();
+    ctx.globalCompositeOperation = prev;
+    ctx.clip();
+    ctx.drawImage(settings.fill, 0, 0, settings.size, settings.size);
+    ctx.restore();
   } else {
-    context.fillStyle = settings.fill;
-    context.fill();
+    ctx.fillStyle = settings.fill;
+    ctx.fill();
   }
 }; // Draws QR code to the given `canvas` and returns it.
 
@@ -383,9 +379,9 @@ var draw_on_canvas = function draw_on_canvas(canvas, settings) {
   }
 
   var $canvas = JQ(canvas).data('qrcode', qr);
-  var context = $canvas[0].getContext('2d');
-  draw_background(qr, context, settings);
-  draw_modules(qr, context, settings);
+  var ctx = $canvas[0].getContext('2d');
+  draw_background(qr, ctx, settings);
+  draw_modules(qr, ctx, settings);
   return $canvas;
 }; // Returns a `canvas` element representing the QR code for the given settings.
 
@@ -415,8 +411,6 @@ var create_div = function create_div(settings) {
   var module_count = qr.module_count;
   var module_size = math_floor(settings_size / module_count);
   var offset = math_floor(0.5 * (settings_size - module_size * module_count));
-  var row;
-  var col;
   var container_css = {
     position: 'relative',
     left: 0,
@@ -440,8 +434,8 @@ var create_div = function create_div(settings) {
     $div.css('background-color', settings_bgColor);
   }
 
-  for (row = 0; row < module_count; row += 1) {
-    for (col = 0; col < module_count; col += 1) {
+  for (var row = 0; row < module_count; row += 1) {
+    for (var col = 0; col < module_count; col += 1) {
       if (qr.is_dark(row, col)) {
         JQ('<div/>').css(dark_css).css({
           left: offset + col * module_size,
@@ -455,9 +449,9 @@ var create_div = function create_div(settings) {
 };
 
 var create_html = function create_html(settings) {
-  if (HAS_CANVAS && settings.render === 'canvas') {
+  if (settings.render === 'canvas') {
     return create_canvas(settings);
-  } else if (HAS_CANVAS && settings.render === 'image') {
+  } else if (settings.render === 'image') {
     return create_img(settings);
   }
 
@@ -513,36 +507,9 @@ JQ.fn.qrcode = module.exports = function main(options) {
     }
   });
 };
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(1)))
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || new Function("return this")();
-} catch (e) {
-	// This works if the window reference is available
-	if (typeof window === "object") g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//---------------------------------------------------------------------
@@ -1039,7 +1006,7 @@ var qrcode = function() {
       return qrHtml;
     };
 
-    _this.createSvgTag = function(cellSize, margin) {
+    _this.createSvgTag = function(cellSize, margin, alt, title) {
 
       var opts = {};
       if (typeof arguments[0] == 'object') {
@@ -1048,10 +1015,23 @@ var qrcode = function() {
         // overwrite cellSize and margin.
         cellSize = opts.cellSize;
         margin = opts.margin;
+        alt = opts.alt;
+        title = opts.title;
       }
 
       cellSize = cellSize || 2;
       margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
+
+      // Compose alt property surrogate
+      alt = (typeof alt === 'string') ? {text: alt} : alt || {};
+      alt.text = alt.text || null;
+      alt.id = (alt.text) ? alt.id || 'qrcode-description' : null;
+
+      // Compose title property surrogate
+      title = (typeof title === 'string') ? {text: title} : title || {};
+      title.text = title.text || null;
+      title.id = (title.text) ? title.id || 'qrcode-title' : null;
+
       var size = _this.getModuleCount() * cellSize + margin * 2;
       var c, mc, r, mr, qrSvg='', rect;
 
@@ -1061,7 +1041,14 @@ var qrcode = function() {
       qrSvg += '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"';
       qrSvg += !opts.scalable ? ' width="' + size + 'px" height="' + size + 'px"' : '';
       qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" ';
-      qrSvg += ' preserveAspectRatio="xMinYMin meet">';
+      qrSvg += ' preserveAspectRatio="xMinYMin meet"';
+      qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' +
+          escapeXml([title.id, alt.id].join(' ').trim() ) + '"' : '';
+      qrSvg += '>';
+      qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' +
+          escapeXml(title.text) + '</title>' : '';
+      qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' +
+          escapeXml(alt.text) + '</description>' : '';
       qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>';
       qrSvg += '<path d="';
 
@@ -1121,12 +1108,27 @@ var qrcode = function() {
       img += '"';
       if (alt) {
         img += '\u0020alt="';
-        img += alt;
+        img += escapeXml(alt);
         img += '"';
       }
       img += '/>';
 
       return img;
+    };
+
+    var escapeXml = function(s) {
+      var escaped = '';
+      for (var i = 0; i < s.length; i += 1) {
+        var c = s.charAt(i);
+        switch(c) {
+        case '<': escaped += '&lt;'; break;
+        case '>': escaped += '&gt;'; break;
+        case '&': escaped += '&amp;'; break;
+        case '"': escaped += '&quot;'; break;
+        default : escaped += c; break;
+        }
+      }
+      return escaped;
     };
 
     var _createHalfASCII = function(margin) {

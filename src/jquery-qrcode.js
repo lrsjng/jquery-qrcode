@@ -1,11 +1,5 @@
-const WIN = global.window;
+const WIN = window; // eslint-disable-line
 const JQ = WIN.jQuery;
-
-// Check if canvas is available in the browser (as Modernizr does)
-const HAS_CANVAS = (() => {
-    const el = WIN.document.createElement('canvas');
-    return !!(el.getContext && el.getContext('2d'));
-})();
 
 const is_img_el = x => x && typeof x.tagName === 'string' && x.tagName.toUpperCase() === 'IMG';
 
@@ -66,14 +60,14 @@ const create_min_qrcode = (text, level, min_ver, max_ver, quiet) => {
     return undefined;
 };
 
-const draw_background_label = (qr, context, settings) => {
+const draw_background_label = (qr, ctx, settings) => {
     const size = settings.size;
     const font = 'bold ' + settings.mSize * size + 'px ' + settings.fontname;
-    const ctx = JQ('<canvas/>')[0].getContext('2d');
+    const tmp_ctx = JQ('<canvas/>')[0].getContext('2d');
 
-    ctx.font = font;
+    tmp_ctx.font = font;
 
-    const w = ctx.measureText(settings.label).width;
+    const w = tmp_ctx.measureText(settings.label).width;
     const sh = settings.mSize;
     const sw = w / size;
     const sl = (1 - sw) * settings.mPosX;
@@ -90,12 +84,12 @@ const draw_background_label = (qr, context, settings) => {
         qr.add_blank(sl - pad, st - pad, sr + pad, sb + pad);
     }
 
-    context.fillStyle = settings.fontcolor;
-    context.font = font;
-    context.fillText(settings.label, sl * size, st * size + 0.75 * settings.mSize * size);
+    ctx.fillStyle = settings.fontcolor;
+    ctx.font = font;
+    ctx.fillText(settings.label, sl * size, st * size + 0.75 * settings.mSize * size);
 };
 
-const draw_background_img = (qr, context, settings) => {
+const draw_background_img = (qr, ctx, settings) => {
     const size = settings.size;
     const w = settings.image.naturalWidth || 1;
     const h = settings.image.naturalHeight || 1;
@@ -115,159 +109,150 @@ const draw_background_img = (qr, context, settings) => {
         qr.add_blank(sl - pad, st - pad, sr + pad, sb + pad);
     }
 
-    context.drawImage(settings.image, sl * size, st * size, sw * size, sh * size);
+    ctx.drawImage(settings.image, sl * size, st * size, sw * size, sh * size);
 };
 
-const draw_background = (qr, context, settings) => {
+const draw_background = (qr, ctx, settings) => {
     if (is_img_el(settings.background)) {
-        context.drawImage(settings.background, 0, 0, settings.size, settings.size);
+        ctx.drawImage(settings.background, 0, 0, settings.size, settings.size);
     } else if (settings.background) {
-        context.fillStyle = settings.background;
-        context.fillRect(settings.left, settings.top, settings.size, settings.size);
+        ctx.fillStyle = settings.background;
+        ctx.fillRect(settings.left, settings.top, settings.size, settings.size);
     }
 
     const mode = settings.mode;
     if (mode === 1 || mode === 2) {
-        draw_background_label(qr, context, settings);
+        draw_background_label(qr, ctx, settings);
     } else if (is_img_el(settings.image) && (mode === 3 || mode === 4)) {
-        draw_background_img(qr, context, settings);
+        draw_background_img(qr, ctx, settings);
     }
 };
 
-const draw_modules_default = (qr, context, settings, left, top, width, row, col) => {
+const draw_modules_default = (qr, ctx, settings, left, top, width, row, col) => {
     if (qr.is_dark(row, col)) {
-        context.rect(left, top, width, width);
+        ctx.r(left, top, width, width);
     }
 };
 
 const draw_modules_rounded_dark = (ctx, l, t, r, b, rad, nw, ne, se, sw) => {
     if (nw) {
-        ctx.moveTo(l + rad, t);
+        ctx.m(l + rad, t);
     } else {
-        ctx.moveTo(l, t);
+        ctx.m(l, t);
     }
 
     if (ne) {
-        ctx.lineTo(r - rad, t);
-        ctx.arcTo(r, t, r, b, rad);
+        ctx.l(r - rad, t).a(r, t, r, b, rad);
     } else {
-        ctx.lineTo(r, t);
+        ctx.l(r, t);
     }
 
     if (se) {
-        ctx.lineTo(r, b - rad);
-        ctx.arcTo(r, b, l, b, rad);
+        ctx.l(r, b - rad).a(r, b, l, b, rad);
     } else {
-        ctx.lineTo(r, b);
+        ctx.l(r, b);
     }
 
     if (sw) {
-        ctx.lineTo(l + rad, b);
-        ctx.arcTo(l, b, l, t, rad);
+        ctx.l(l + rad, b).a(l, b, l, t, rad);
     } else {
-        ctx.lineTo(l, b);
+        ctx.l(l, b);
     }
 
     if (nw) {
-        ctx.lineTo(l, t + rad);
-        ctx.arcTo(l, t, r, t, rad);
+        ctx.l(l, t + rad).a(l, t, r, t, rad);
     } else {
-        ctx.lineTo(l, t);
+        ctx.l(l, t);
     }
 };
 
 const draw_modules_rounded_light = (ctx, l, t, r, b, rad, nw, ne, se, sw) => {
     if (nw) {
-        ctx.moveTo(l + rad, t);
-        ctx.lineTo(l, t);
-        ctx.lineTo(l, t + rad);
-        ctx.arcTo(l, t, l + rad, t, rad);
+        ctx.m(l + rad, t).l(l, t).l(l, t + rad).a(l, t, l + rad, t, rad);
     }
 
     if (ne) {
-        ctx.moveTo(r - rad, t);
-        ctx.lineTo(r, t);
-        ctx.lineTo(r, t + rad);
-        ctx.arcTo(r, t, r - rad, t, rad);
+        ctx.m(r - rad, t).l(r, t).l(r, t + rad).a(r, t, r - rad, t, rad);
     }
 
     if (se) {
-        ctx.moveTo(r - rad, b);
-        ctx.lineTo(r, b);
-        ctx.lineTo(r, b - rad);
-        ctx.arcTo(r, b, r - rad, b, rad);
+        ctx.m(r - rad, b).l(r, b).l(r, b - rad).a(r, b, r - rad, b, rad);
     }
 
     if (sw) {
-        ctx.moveTo(l + rad, b);
-        ctx.lineTo(l, b);
-        ctx.lineTo(l, b - rad);
-        ctx.arcTo(l, b, l + rad, b, rad);
+        ctx.m(l + rad, b).l(l, b).l(l, b - rad).a(l, b, l + rad, b, rad);
     }
 };
 
-const draw_modules_rounded = (qr, context, settings, left, top, width, row, col) => {
-    const is_dark = qr.is_dark;
+const draw_modules_rounded = (qr, ctx, settings, left, top, width, row, col) => {
     const right = left + width;
     const bottom = top + width;
-    const radius = settings.radius * width;
-    const rowT = row - 1;
-    const rowB = row + 1;
-    const colL = col - 1;
-    const colR = col + 1;
-    const center = is_dark(row, col);
-    const northwest = is_dark(rowT, colL);
-    const north = is_dark(rowT, col);
-    const northeast = is_dark(rowT, colR);
-    const east = is_dark(row, colR);
-    const southeast = is_dark(rowB, colR);
-    const south = is_dark(rowB, col);
-    const southwest = is_dark(rowB, colL);
-    const west = is_dark(row, colL);
+    const rad = settings.radius * width;
 
-    if (center) {
-        draw_modules_rounded_dark(context, left, top, right, bottom, radius, !north && !west, !north && !east, !south && !east, !south && !west);
+    const row_n = row - 1;
+    const row_s = row + 1;
+    const col_w = col - 1;
+    const col_e = col + 1;
+
+    const is_dark = qr.is_dark;
+    const d_center = is_dark(row, col);
+    const d_nw = is_dark(row_n, col_w);
+    const d_n = is_dark(row_n, col);
+    const d_ne = is_dark(row_n, col_e);
+    const d_e = is_dark(row, col_e);
+    const d_se = is_dark(row_s, col_e);
+    const d_s = is_dark(row_s, col);
+    const d_sw = is_dark(row_s, col_w);
+    const d_w = is_dark(row, col_w);
+
+    if (d_center) {
+        draw_modules_rounded_dark(ctx, left, top, right, bottom, rad, !d_n && !d_w, !d_n && !d_e, !d_s && !d_e, !d_s && !d_w);
     } else {
-        draw_modules_rounded_light(context, left, top, right, bottom, radius, north && west && northwest, north && east && northeast, south && east && southeast, south && west && southwest);
+        draw_modules_rounded_light(ctx, left, top, right, bottom, rad, d_n && d_w && d_nw, d_n && d_e && d_ne, d_s && d_e && d_se, d_s && d_w && d_sw);
     }
 };
 
-const draw_modules = (qr, context, settings) => {
+const draw_modules = (qr, ctx, settings) => {
     const module_count = qr.module_count;
     const module_size = settings.size / module_count;
-    let fn = draw_modules_default;
-    let row;
-    let col;
 
+    let fn = draw_modules_default;
     if (settings.radius > 0 && settings.radius <= 0.5) {
         fn = draw_modules_rounded;
     }
 
-    context.beginPath();
-    for (row = 0; row < module_count; row += 1) {
-        for (col = 0; col < module_count; col += 1) {
+    const draw_ctx = {
+        m(x, y) {ctx.moveTo(x, y); return draw_ctx;},
+        l(x, y) {ctx.lineTo(x, y); return draw_ctx;},
+        a(...args) {ctx.arcTo(...args); return draw_ctx;},
+        r(...args) {ctx.rect(...args); return draw_ctx;}
+    };
+
+    ctx.beginPath();
+    for (let row = 0; row < module_count; row += 1) {
+        for (let col = 0; col < module_count; col += 1) {
             const l = settings.left + col * module_size;
             const t = settings.top + row * module_size;
             const w = module_size;
 
-            fn(qr, context, settings, l, t, w, row, col);
+            fn(qr, draw_ctx, settings, l, t, w, row, col);
         }
     }
     if (is_img_el(settings.fill)) {
-        context.strokeStyle = 'rgba(0,0,0,0.5)';
-        context.lineWidth = 2;
-        context.stroke();
-        const prev = context.globalCompositeOperation;
-        context.globalCompositeOperation = 'destination-out';
-        context.fill();
-        context.globalCompositeOperation = prev;
+        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        const prev = ctx.globalCompositeOperation;
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.fill();
+        ctx.globalCompositeOperation = prev;
 
-        context.clip();
-        context.drawImage(settings.fill, 0, 0, settings.size, settings.size);
-        context.restore();
+        ctx.clip();
+        ctx.drawImage(settings.fill, 0, 0, settings.size, settings.size);
+        ctx.restore();
     } else {
-        context.fillStyle = settings.fill;
-        context.fill();
+        ctx.fillStyle = settings.fill;
+        ctx.fill();
     }
 };
 
@@ -279,10 +264,10 @@ const draw_on_canvas = (canvas, settings) => {
     }
 
     const $canvas = JQ(canvas).data('qrcode', qr);
-    const context = $canvas[0].getContext('2d');
+    const ctx = $canvas[0].getContext('2d');
 
-    draw_background(qr, context, settings);
-    draw_modules(qr, context, settings);
+    draw_background(qr, ctx, settings);
+    draw_modules(qr, ctx, settings);
 
     return $canvas;
 };
@@ -314,9 +299,6 @@ const create_div = settings => {
     const module_size = math_floor(settings_size / module_count);
     const offset = math_floor(0.5 * (settings_size - module_size * module_count));
 
-    let row;
-    let col;
-
     const container_css = {
         position: 'relative',
         left: 0,
@@ -341,8 +323,8 @@ const create_div = settings => {
         $div.css('background-color', settings_bgColor);
     }
 
-    for (row = 0; row < module_count; row += 1) {
-        for (col = 0; col < module_count; col += 1) {
+    for (let row = 0; row < module_count; row += 1) {
+        for (let col = 0; col < module_count; col += 1) {
             if (qr.is_dark(row, col)) {
                 JQ('<div/>')
                     .css(dark_css)
@@ -359,9 +341,9 @@ const create_div = settings => {
 };
 
 const create_html = settings => {
-    if (HAS_CANVAS && settings.render === 'canvas') {
+    if (settings.render === 'canvas') {
         return create_canvas(settings);
-    } else if (HAS_CANVAS && settings.render === 'image') {
+    } else if (settings.render === 'image') {
         return create_img(settings);
     }
 
