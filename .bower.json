@@ -1,0 +1,15 @@
+{
+  "name": "jquery-qrcode",
+  "homepage": "https://github.com/lrsjng/jquery-qrcode",
+  "version": "0.18.0",
+  "_release": "0.18.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.18.0",
+    "commit": "631df8abacf306d58434d7792808210d976620c3"
+  },
+  "_source": "https://github.com/lrsjng/jquery-qrcode.git",
+  "_target": "^0.18.0",
+  "_originalSource": "lrsjng/jquery-qrcode",
+  "_direct": true
+}
